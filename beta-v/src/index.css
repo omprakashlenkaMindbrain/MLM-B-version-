@@ -5,3 +5,30 @@ body {
   font-family: 'Inter', sans-serif;
   background-color: #f8fafc;
 }
+
+/* navbar anmation drodown */
+.mobile-menu {
+  background-color: #065f46;
+  color: white;
+  padding: 0 2rem;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.4s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-top: 1px solid #047857;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.mobile-menu.open {
+  padding: 1.5rem 2rem;
+  max-height: 400px;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+

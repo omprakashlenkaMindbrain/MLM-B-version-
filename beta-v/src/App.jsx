@@ -1,4 +1,4 @@
-import KYC from "./pages/Details/KYC"
+import RouterManage from "./routing/RouterManage"
 
 function App() {
   return (
@@ -6,7 +6,8 @@ function App() {
     // <SignupPage />
     // <Navbar />
     // <Plans />
-    <KYC />
+    // <KYC />
+    <RouterManage />
   )
 }
 

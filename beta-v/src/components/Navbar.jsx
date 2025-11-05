@@ -1,48 +1,84 @@
-import { User } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
-export default function Navbar({ user, onLogout }) {
-  return (
-    <nav className="bg-[#0E562B] text-white shadow-md sticky top-0 z-50 border-b border-[#81B633]/40">
-      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-        {/* Logo Section */}
-        <div
-          className="flex items-center gap-3 cursor-pointer select-none"
-          onClick={() => (window.location.href = "/")}
+const Navbar = () => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <nav
+            className="w-full bg-green-900 text-white z-50 shadow-lg"
+            style={{
+                borderBottomLeftRadius: "20px",
+                borderBottomRightRadius: "15px",
+                overflow: "hidden",
+            }}
         >
-          <div className="w-10 h-10 bg-[#81B633] rounded-full flex items-center justify-center font-bold text-[#0E562B] shadow-sm border border-[#0E562B]/20">
-            BM2
-          </div>
-          <h1 className="text-xl font-semibold tracking-wide hover:text-[#81B633] transition-colors">
-            BM2 Mall
-          </h1>
-        </div>
+            <div className="max-w-[1440px] mx-auto px-6 flex justify-between items-center h-20">
+                {/* Logo */}
+                <div className="flex items-center space-x-4 text-lg font-bold">
+                    <div className="bg-green-700 rounded-full w-12 h-12 flex items-center justify-center shadow">
+                        <Link to="/" className="hover:text-green-300 transition">
+                            BMX
+                        </Link>
+                    </div>
+                    <span className="text-2xl tracking-wide">BM2 Mall</span>
+                </div>
 
-        {/* Right Section */}
-        {user ? (
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 bg-[#0E562B] border border-[#81B633] rounded-full px-4 py-2 shadow-sm hover:bg-[#0d4a25] transition">
-              <User size={18} className="text-[#81B633]" />
-              <span className="text-sm font-medium text-white">
-                {user.name || "John Doe"}
-              </span>
+                {/* Desktop Menu */}
+                <div className="hidden md:flex items-center space-x-10 font-medium text-lg">
+                    <Link to="/kyc" className="hover:text-green-300 transition">
+                        KYC
+                    </Link>
+                    <Link to="/plans" className="hover:text-green-300 transition">
+                        Plans
+                    </Link>
+                    <Link to="/profile" className="hover:text-green-300 transition">
+                        Profile
+                    </Link>
+                    <button className="ml-6 bg-white text-green-900 rounded-lg px-6 py-3 font-semibold hover:bg-green-100 shadow transition">
+                        Logout
+                    </button>
+                </div>
+
+                {/* Mobile Menu Button */}
+                <button
+                    className="md:hidden focus:outline-none"
+                    onClick={() => setIsOpen((v) => !v)}
+                    aria-label="Toggle menu"
+                >
+                    {isOpen ? <X size={30} /> : <Menu size={30} />}
+                </button>
             </div>
 
-            <button
-              onClick={onLogout}
-              className="border border-red-500 text-red-500 hover:bg-red-500 hover:text-white px-4 py-2 rounded-lg font-semibold transition shadow-sm"
+            {/* Mobile Dropdown Menu */}
+            <div
+                className={`md:hidden flex flex-col bg-green-800 text-white px-8 transition-all duration-500 ease-in-out ${isOpen ? "max-h-[400px] py-6 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                style={{
+                    borderBottomLeftRadius: "20px",
+                    borderBottomRightRadius: "15px",
+                    overflow: "hidden",
+                }}
             >
-              Logout
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => (window.location.href = "/login")}
-            className="border border-[#81B633] text-[#81B633] hover:bg-[#81B633] hover:text-[#0E562B] px-5 py-2 rounded-lg font-semibold shadow-sm transition"
-          >
-            Login
-          </button>
-        )}
-      </div>
-    </nav>
-  );
-}
+                <a href="#" className="hover:text-green-200 transition text-xl font-medium">
+                    Home
+                </a>
+                <a href="#" className="hover:text-green-200 transition text-xl font-medium">
+                    KYC
+                </a>
+                <a href="#" className="hover:text-green-200 transition text-xl font-medium">
+                    Plans
+                </a>
+                <a href="#" className="hover:text-green-200 transition text-xl font-medium">
+                    Profile
+                </a>
+                <button className="bg-white text-green-900 rounded-lg px-8 py-3 font-semibold hover:bg-green-100 shadow w-fit mt-2">
+                    Logout
+                </button>
+            </div>
+        </nav>
+    );
+};
+
+export default Navbar;
