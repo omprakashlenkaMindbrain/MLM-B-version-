@@ -1,32 +1,47 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Create context
 const AuthContext = createContext();
 
-// Provider component
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
   const navigate = useNavigate();
 
-  // Derived state
-  const isLoggedIn = !!user;
+
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const savedAuth = localStorage.getItem("isAuth");
+    return savedAuth === "true"; // localStorage stores strings
+  });
+
+  // Sync state with localStorage whenever user or isLoggedIn changes
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("isAuth", "true");
+    } else {
+      localStorage.removeItem("user");
+      localStorage.removeItem("rememberedUser");
+      localStorage.setItem("isAuth", "false");
+    }
+  }, [user]);
 
   // Login function
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-    navigate("/");
+    setIsLoggedIn(true);
+    navigate("/"); // redirect to home
   };
 
   // Logout function
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
-    navigate("/login");
+    setIsLoggedIn(false);
+    navigate("/login"); // redirect to login
   };
 
   return (
@@ -36,5 +51,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook to use auth
+// Custom hook to use auth
 export const useAuth = () => useContext(AuthContext);

@@ -29,7 +29,6 @@ export default function Plans() {
       alert("❌ Please upload payment screenshot before submitting!");
       return;
     }
-
     alert(`✅ ${selectedPlan.name} plan submitted. File: ${paymentFile.name}`);
     setShowModal(false);
     setPaymentFile(null);
@@ -37,45 +36,45 @@ export default function Plans() {
 
   return (
     <>
-      {/* Animated Background */}
-      <div className="relative min-h-screen overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-green-100 via-white to-green-50 animate-gradient-x z-0"></div>
+      {/* Background */}
+      <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-green-50 via-white to-green-100">
+        <div className="absolute inset-0 animate-gradient-x opacity-50"></div>
 
-        {/* Page Content */}
-        <div className="relative z-10 py-16 px-6">
+        {/* Content */}
+        <div className="relative z-10 py-20 px-4 sm:px-8 lg:px-12">
           <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#0E562B] mb-4">Subscription Plans</h1>
-            <p className="text-gray-600 mb-12 text-base sm:text-lg">
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-[#0E562B] mb-3 tracking-tight">
+              Subscription Plans
+            </h1>
+            <p className="text-gray-600 mb-14 text-base sm:text-lg">
               Choose the plan that best fits your business needs.
             </p>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Plans Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {plans.map((plan) => (
                 <div
                   key={plan.id}
-                  className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-2 border border-gray-100 p-6 sm:p-8 flex flex-col justify-between"
+                  className="bg-white rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 p-8 flex flex-col justify-between"
                 >
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-semibold text-[#0E562B] mb-2">{plan.name}</h2>
-                    <p className="text-3xl sm:text-4xl font-bold text-[#16a34a] mb-2">₹{plan.price}</p>
-                    <p className="text-gray-600 text-sm sm:text-base mb-4">{plan.description}</p>
+                    <h2 className="text-2xl font-semibold text-[#0E562B] mb-3">{plan.name}</h2>
+                    <p className="text-4xl font-bold text-[#16a34a] mb-2">₹{plan.price}</p>
+                    <p className="text-gray-500 mb-6">{plan.description}</p>
 
-                    <ul className="text-gray-700 text-sm sm:text-base space-y-2 mb-6">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle size={16} className="text-[#16a34a]" /> Priority Support
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle size={16} className="text-[#16a34a]" /> Unlimited Access
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle size={16} className="text-[#16a34a]" /> Easy Upgrade
-                      </li>
-                    </ul>
+                    <div className="space-y-3">
+                      {["Priority Support", "Unlimited Access", "Easy Upgrade"].map((feature, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-gray-700">
+                          <CheckCircle size={18} className="text-[#16a34a]" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   <button
                     onClick={() => handleViewDetails(plan)}
-                    className="w-full bg-green-700 hover:bg-[#138c2d] text-white font-semibold py-2.5 rounded-xl transition shadow-md text-base sm:text-lg"
+                    className="mt-8 w-full bg-green-700 hover:bg-[#138c2d] text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-md text-lg"
                   >
                     View Details
                   </button>
@@ -89,43 +88,46 @@ export default function Plans() {
       {/* Modal */}
       {showModal && selectedPlan && (
         <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full relative text-sm sm:text-base">
-            {/* Close Cross */}
+          <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full relative">
+            {/* Close */}
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition"
             >
-              <X size={20} />
+              <X size={22} />
             </button>
 
-            <h2 className="text-xl sm:text-2xl font-bold text-[#0E562B] mb-2">{selectedPlan.name} Plan</h2>
-            <p className="text-2xl sm:text-3xl font-bold text-[#16a34a] mb-2">₹{selectedPlan.price}</p>
-            <p className="text-gray-600 mb-4">{selectedPlan.description}</p>
+            <h2 className="text-2xl font-bold text-[#0E562B] mb-1">{selectedPlan.name} Plan</h2>
+            <p className="text-3xl font-bold text-[#16a34a] mb-3">₹{selectedPlan.price}</p>
+            <p className="text-gray-600 mb-5">{selectedPlan.description}</p>
 
-            <div className="bg-gray-100 rounded-xl p-3 sm:p-4 mb-4 text-center">
-              <p className="text-gray-600 text-xs sm:text-sm mb-2">QR Code for Payment</p>
-              <div className="w-32 h-32 sm:w-36 sm:h-36 bg-gray-300 rounded flex items-center justify-center mx-auto">
-                <span className="text-gray-500 text-xs sm:text-sm">QR Code</span>
+            {/* QR Section */}
+            <div className="bg-gray-100 rounded-xl p-4 mb-5 text-center">
+              <p className="text-gray-600 text-sm mb-2 font-medium">QR Code for Payment</p>
+              <div className="w-36 h-36 mx-auto bg-gray-300 rounded flex items-center justify-center">
+                <span className="text-gray-500 text-sm">QR Code</span>
               </div>
             </div>
 
-            {/* Payment Upload */}
-            <div className="mb-4 flex flex-col gap-2">
-              <label className="font-semibold text-gray-800 text-sm">Upload Payment Screenshot (Required)</label>
+            {/* Upload Section */}
+            <div className="mb-6">
+              <label className="font-semibold text-gray-800 text-sm block mb-1">
+                Upload Payment Screenshot (Required)
+              </label>
               <input
                 type="file"
                 accept=".png,.jpg,.jpeg,.pdf"
                 onChange={handlePaymentUpload}
-                className="border border-gray-300 rounded-lg p-2 text-sm"
+                className="border border-gray-300 rounded-lg p-2 text-sm w-full"
               />
               {paymentFile && (
-                <span className="text-green-700 font-medium text-sm">{paymentFile.name}</span>
+                <p className="text-green-700 font-medium text-sm mt-2">{paymentFile.name}</p>
               )}
             </div>
 
             <button
               onClick={handleSubmitPayment}
-              className="w-full bg-green-700 hover:bg-[#138c2d] text-white font-semibold py-2.5 rounded-xl transition shadow-md text-base sm:text-lg"
+              className="w-full bg-green-700 hover:bg-[#138c2d] text-white font-semibold py-3 rounded-xl shadow-md transition-all duration-200 text-lg"
             >
               Submit Payment
             </button>
@@ -133,7 +135,7 @@ export default function Plans() {
         </div>
       )}
 
-      {/* Animated Gradient CSS */}
+      {/* Background Animation */}
       <style>
         {`
           @keyframes gradientX {

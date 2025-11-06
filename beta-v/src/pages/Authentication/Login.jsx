@@ -1,14 +1,24 @@
 import { ArrowRight, Eye, EyeOff, Lock, Phone } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export default function LoginPage() {
+  const { login, isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [formData, setFormData] = useState({
     phone: "",
     password: "",
   });
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isLoggedIn) navigate("/");
+  }, [isLoggedIn, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,6 +29,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
+    // Validation
     if (!formData.phone || !formData.password) {
       alert("Please fill in all fields");
       setIsLoading(false);
@@ -31,14 +42,22 @@ export default function LoginPage() {
       return;
     }
 
+    // Simulate login API call
     setTimeout(() => {
-      alert("Login successful!");
+      // Save login info if "Remember me" checked
+      if (rememberMe) {
+        localStorage.setItem("rememberedUser", JSON.stringify(formData));
+      } else {
+        localStorage.removeItem("rememberedUser");
+      }
+
+      // Use context login function
+      login({ phone: formData.phone });
       setIsLoading(false);
     }, 1000);
   };
 
-  const inputClass =
-    "w-full px-3 py-2 text-sm outline-none placeholder-gray-400";
+  const inputClass = "w-full px-3 py-2 text-sm outline-none placeholder-gray-400";
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-gray-50">
@@ -51,9 +70,7 @@ export default function LoginPage() {
             <div className="w-14 h-14 mx-auto bg-[#0E562B] text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg">
               BM
             </div>
-            <h1 className="text-3xl font-bold text-[#0E562B] mb-2">
-              Welcome Back
-            </h1>
+            <h1 className="text-3xl font-bold text-[#0E562B] mb-2">Welcome Back</h1>
             <p className="text-gray-600 text-sm">Sign in to continue to BM2 Mall</p>
           </div>
 
@@ -98,6 +115,8 @@ export default function LoginPage() {
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={() => setRememberMe(!rememberMe)}
                   className="w-4 h-4 rounded border-gray-300 accent-[#81B633]"
                 />
                 Remember me
