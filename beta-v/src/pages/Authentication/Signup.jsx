@@ -1,5 +1,6 @@
-import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Lock, Mail, Phone, User } from "lucide-react";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,6 +11,11 @@ export default function SignupPage() {
     phone: "",
     password: "",
   });
+
+  const navigate=useNavigate();
+
+
+
 
   const passwordStrength = formData.password.length >= 8;
 
@@ -22,7 +28,6 @@ export default function SignupPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Validation
     if (!formData.name || !formData.email || !formData.phone || !formData.password) {
       alert("Please fill in all fields");
       setIsLoading(false);
@@ -46,121 +51,113 @@ export default function SignupPage() {
       setIsLoading(false);
       return;
     }
-
-    // Simulate signup
-    setTimeout(() => {
       alert("Account created successfully!");
       setIsLoading(false);
-    }, 1000);
+
+
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
   };
 
+  const inputClass = "w-full px-3 py-2 text-sm outline-none";
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f2f7f1] to-[#e6f3e4] px-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-[#81B633]/30">
+    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
+      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-[#f2f7f1] to-[#e6f3e4]"></div>
+
+      <div className="w-full max-w-md relative z-10">
+        <div className="bg-white rounded-2xl shadow-xl p-6 border border-[#81B633]/30">
           {/* Header */}
-          <div className="mb-8 text-center">
+          <div className="mb-6 text-center">
             <div className="w-12 h-12 mx-auto bg-[#0E562B] text-white rounded-full flex items-center justify-center font-bold text-lg mb-3">
               BM
             </div>
-            <h1 className="text-3xl font-bold text-[#0E562B] mb-2">
-              Create Account
-            </h1>
-            <p className="text-gray-600">
-              Join BM2 Mall and manage your account securely
-            </p>
+            <h1 className="text-2xl font-bold text-[#0E562B] mb-1">Create Account</h1>
+            <p className="text-gray-600 text-sm">Join BM2 Mall and manage your account securely</p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Full Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name
-              </label>
+            <div className="flex items-center gap-2 border-b border-gray-300 focus-within:border-[#81B633]">
+              <User size={18} className="text-gray-400" />
               <input
                 type="text"
                 name="name"
-                placeholder="John Doe"
+                placeholder="Full Name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#81B633]"
+                className={inputClass}
               />
             </div>
 
             {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
+            <div className="flex items-center gap-2 border-b border-gray-300 focus-within:border-[#81B633]">
+              <Mail size={18} className="text-gray-400" />
               <input
                 type="email"
                 name="email"
-                placeholder="you@example.com"
+                placeholder="Email Address"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#81B633]"
+                className={inputClass}
               />
             </div>
 
-            {/* Phone Number */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number
-              </label>
+            {/* Phone */}
+            <div className="flex items-center gap-2 border-b border-gray-300 focus-within:border-[#81B633]">
+              <Phone size={18} className="text-gray-400" />
               <input
                 type="tel"
                 name="phone"
-                placeholder="9876543210"
+                placeholder="Phone Number"
                 value={formData.phone}
                 onChange={handleChange}
                 maxLength="10"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#81B633]"
+                className={inputClass}
               />
             </div>
 
             {/* Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#81B633]"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#0E562B]"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              <div className="mt-2 flex items-center gap-2">
-                <div
-                  className={`h-1 flex-1 rounded-full ${
-                    passwordStrength ? "bg-[#81B633]" : "bg-gray-300"
-                  }`}
-                />
-                <span className="text-xs text-gray-500">
-                  {passwordStrength ? "✓ Strong" : "8+ characters"}
-                </span>
-              </div>
+            <div className="flex items-center gap-2 border-b border-gray-300 focus-within:border-[#81B633] relative">
+              <Lock size={18} className="text-gray-400" />
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full px-3 py-2 text-sm pr-10 outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
 
-            {/* Terms Checkbox */}
-            <div className="flex items-start gap-3 pt-2">
+            {/* Password Strength */}
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <div
+                className={`h-1 flex-1 rounded-full ${
+                  passwordStrength ? "bg-[#81B633]" : "bg-gray-300"
+                }`}
+              />
+              <span>{passwordStrength ? "✓ Strong" : "8+ characters"}</span>
+            </div>
+
+            {/* Terms */}
+            <div className="flex items-start gap-2 pt-2 text-sm text-gray-600">
               <input
                 type="checkbox"
                 id="terms"
-                className="w-4 h-4 rounded border-gray-300 mt-1 accent-[#81B633]"
+                className="w-4 h-4 mt-1 accent-[#81B633]"
               />
-              <label htmlFor="terms" className="text-sm text-gray-600">
+              <label htmlFor="terms">
                 I agree to the{" "}
                 <a href="#" className="text-[#0E562B] hover:underline">
                   Terms of Service
@@ -172,11 +169,11 @@ export default function SignupPage() {
               </label>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center bg-[#81B633] hover:bg-[#74a82e] text-white py-2 px-4 rounded-md font-medium transition-all mt-4"
+              className="w-full flex items-center justify-center bg-green-700 hover:bg-[#74a82e] text-white py-2 text-sm rounded-md font-medium mt-2"
             >
               {isLoading ? "Creating Account..." : "Create Account"}
               <ArrowRight size={18} className="ml-2" />
@@ -184,16 +181,11 @@ export default function SignupPage() {
           </form>
 
           {/* Footer */}
-          <div className="mt-6 pt-6 border-t border-gray-200 text-center">
-            <p className="text-gray-500">
-              Already have an account?{" "}
-              <a
-                href="#"
-                className="text-[#0E562B] hover:underline font-medium"
-              >
-                Sign in
-              </a>
-            </p>
+          <div className="mt-4 text-center text-gray-500 text-sm">
+            Already have an account?{" "}
+            <Link to="/login" className="text-[#0E562B] hover:underline font-medium">
+              Sign in
+            </Link>
           </div>
         </div>
       </div>
