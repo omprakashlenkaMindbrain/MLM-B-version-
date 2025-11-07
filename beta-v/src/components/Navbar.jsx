@@ -1,5 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { CreditCard, FileText, LogIn, LogOut, Menu, User, X } from "lucide-react";
+import {
+  CreditCard,
+  FileText,
+  LogIn,
+  LogOut,
+  Menu,
+  User,
+  X,
+} from "lucide-react";
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -30,7 +38,8 @@ const Navbar = () => {
         overflow: "hidden",
       }}
     >
-      <div className="max-w-[1440px] mx-auto px-6 py-3 flex justify-between items-center relative">
+      <div className="max-w-[1200px] mx-auto px-4 py-2 flex justify-between items-center relative">
+
         {/* Logo */}
         <div
           className="flex items-center gap-3 cursor-pointer"
@@ -55,8 +64,7 @@ const Navbar = () => {
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                {link.icon &&
-                  React.cloneElement(link.icon, { color: "white" })}
+                {link.icon && React.cloneElement(link.icon, { color: "white" })}
                 <Link
                   to={link.path}
                   className="text-white font-medium relative z-10 bg-clip-text hover:text-transparent bg-gradient-to-r from-green-300 via-green-100 to-green-300 transition-all duration-500"
@@ -83,9 +91,9 @@ const Navbar = () => {
                 scale: 1.05,
                 boxShadow: "0 0 20px rgba(255,255,255,0.4)",
               }}
-              className="ml-4 bg-[#4CAF50] hover:bg-[#81B633] text-white px-5 py-2.5 rounded-xl font-semibold shadow-md flex items-center gap-2 transition"
+              className="ml-4 bg-[#4CAF50] hover:bg-[#81B633] text-white px-3 py-1.5 rounded-lg font-medium shadow-md flex items-center gap-1.5 text-sm transition"
             >
-              <LogOut size={18} color="white" />
+              <LogOut size={16} color="white" />
               Logout
             </motion.button>
           ) : (

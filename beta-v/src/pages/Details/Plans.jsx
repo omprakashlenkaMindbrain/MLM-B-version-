@@ -2,10 +2,25 @@ import { CheckCircle, X } from "lucide-react";
 import { useState } from "react";
 
 const plans = [
-  { id: 1, name: "Basic", price: 499, description: "Perfect for getting started" },
-  { id: 2, name: "Silver", price: 999, description: "Popular for most users" },
-  { id: 3, name: "Gold", price: 1999, description: "Advanced features for growing businesses" },
-  { id: 4, name: "Premium", price: 4999, description: "All features included — ultimate experience" },
+  {
+    id: 1,
+    name: "Basic",
+    price: 1500,
+    description: "Perfect for getting started",
+  },
+  { id: 2, name: "Silver", price: 5000, description: "Popular for most users" },
+  {
+    id: 3,
+    name: "Gold",
+    price: 10000,
+    description: "Advanced features for growing businesses",
+  },
+  {
+    id: 4,
+    name: "Premium",
+    price: 25000,
+    description: "All features included — ultimate experience",
+  },
 ];
 
 export default function Plans() {
@@ -58,13 +73,24 @@ export default function Plans() {
                   className="bg-white rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 p-8 flex flex-col justify-between"
                 >
                   <div>
-                    <h2 className="text-2xl font-semibold text-[#0E562B] mb-3">{plan.name}</h2>
-                    <p className="text-4xl font-bold text-[#16a34a] mb-2">₹{plan.price}</p>
+                    <h2 className="text-2xl font-semibold text-[#0E562B] mb-3">
+                      {plan.name}
+                    </h2>
+                    <p className="text-4xl font-bold text-[#16a34a] mb-2">
+                      ₹{plan.price}
+                    </p>
                     <p className="text-gray-500 mb-6">{plan.description}</p>
 
                     <div className="space-y-3">
-                      {["Priority Support", "Unlimited Access", "Easy Upgrade"].map((feature, idx) => (
-                        <div key={idx} className="flex items-center gap-2 text-gray-700">
+                      {[
+                        "Priority Support",
+                        "Unlimited Access",
+                        "Easy Upgrade",
+                      ].map((feature, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center gap-2 text-gray-700"
+                        >
                           <CheckCircle size={18} className="text-[#16a34a]" />
                           <span>{feature}</span>
                         </div>
@@ -74,7 +100,7 @@ export default function Plans() {
 
                   <button
                     onClick={() => handleViewDetails(plan)}
-                    className="mt-8 w-full bg-green-700 hover:bg-[#138c2d] text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-md text-lg"
+                    className="mt-6 bg-green-700 hover:bg-[#138c2d] text-white font-medium py-2 px-5 rounded-lg transition-all duration-200 shadow-sm text-sm cursor-pointer"
                   >
                     View Details
                   </button>
@@ -97,13 +123,19 @@ export default function Plans() {
               <X size={22} />
             </button>
 
-            <h2 className="text-2xl font-bold text-[#0E562B] mb-1">{selectedPlan.name} Plan</h2>
-            <p className="text-3xl font-bold text-[#16a34a] mb-3">₹{selectedPlan.price}</p>
+            <h2 className="text-2xl font-bold text-[#0E562B] mb-1">
+              {selectedPlan.name} Plan
+            </h2>
+            <p className="text-3xl font-bold text-[#16a34a] mb-3">
+              ₹{selectedPlan.price}
+            </p>
             <p className="text-gray-600 mb-5">{selectedPlan.description}</p>
 
             {/* QR Section */}
             <div className="bg-gray-100 rounded-xl p-4 mb-5 text-center">
-              <p className="text-gray-600 text-sm mb-2 font-medium">QR Code for Payment</p>
+              <p className="text-gray-600 text-sm mb-2 font-medium">
+                QR Code for Payment
+              </p>
               <div className="w-36 h-36 mx-auto bg-gray-300 rounded flex items-center justify-center">
                 <span className="text-gray-500 text-sm">QR Code</span>
               </div>
@@ -121,16 +153,24 @@ export default function Plans() {
                 className="border border-gray-300 rounded-lg p-2 text-sm w-full"
               />
               {paymentFile && (
-                <p className="text-green-700 font-medium text-sm mt-2">{paymentFile.name}</p>
+                <p className="text-green-700 font-medium text-sm mt-2">
+                  {paymentFile.name}
+                </p>
               )}
             </div>
 
-            <button
-              onClick={handleSubmitPayment}
-              className="w-full bg-green-700 hover:bg-[#138c2d] text-white font-semibold py-3 rounded-xl shadow-md transition-all duration-200 text-lg"
-            >
-              Submit Payment
-            </button>
+            <div className="flex justify-center">
+              <div className="flex justify-center">
+                <div className="flex justify-center">
+                  <button
+                    onClick={handleSubmitPayment}
+                    className="mt-6 bg-green-700 hover:bg-[#138c2d] text-white font-medium py-3 px-25 rounded-lg transition-all duration-200 shadow-md text-base cursor-pointer"
+                  >
+                    Submit Payment
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

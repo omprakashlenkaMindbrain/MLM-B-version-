@@ -1,4 +1,4 @@
-import { BadgeCheck, CheckCircle, FileText, User, XCircle } from "lucide-react";
+import { BadgeCheck, CheckCircle, FileText, User, XCircle,Edit } from "lucide-react";
 import { useState } from "react";
 
 export default function ProfilePage() {
@@ -54,11 +54,12 @@ export default function ProfilePage() {
                 Account Details
               </h3>
               <button
-                onClick={handleEditToggle}
-                className="px-4 py-1.5 bg-[#1E3A8A] text-white text-sm rounded-lg hover:bg-blue-800 transition"
-              >
-                {isEditing ? "Save" : "Edit Profile"}
-              </button>
+  onClick={handleEditToggle}
+  className="flex items-center gap-2 px-4 py-1.5 bg-[#1E3A8A] text-white text-sm rounded-lg hover:bg-blue-800 transition"
+>
+  {!isEditing && <Edit size={16} />} {/* 👈 Show icon only when not editing */}
+  {isEditing ? "Save" : "Edit "}
+</button>
             </div>
 
             <div className="space-y-4 text-sm text-gray-600">
