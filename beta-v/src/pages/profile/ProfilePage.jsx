@@ -1,6 +1,5 @@
+import { BadgeCheck, CheckCircle, FileText, User, XCircle } from "lucide-react";
 import { useState } from "react";
-import { FileText, CheckCircle, XCircle } from "lucide-react";
-import { Link } from "react-router-dom";
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
@@ -8,6 +7,7 @@ export default function ProfilePage() {
     name: "Jane Doe",
     email: "jane.doe@example.com",
     phone: "+1 (555) 123-4567",
+    verified: true,
   });
 
   const handleChange = (e) => {
@@ -28,17 +28,21 @@ export default function ProfilePage() {
       <div className="bg-white shadow-lg rounded-2xl w-full max-w-5xl p-6 sm:p-10 mx-auto">
         {/* Header */}
         <div className="flex flex-col items-center gap-3 mb-8">
-          <div className="bg-green-700 rounded-full w-16 h-16 flex items-center justify-center shadow-md">
-            <Link
-              to="/"
-              className="bg-green-700 w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl hover:bg-green-600 transition"
-            >
-              BM
-            </Link>
+          <div className="bg-green-700 w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl hover:bg-green-600 transition shadow-md">
+           <User className="text-white w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">
-            Welcome, <span className="text-black">{profile.name}</span>
-          </h2>
+
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-semibold text-gray-800 text-center">
+              {profile.name}
+            </h2>
+            {profile.verified && (
+              <span className="flex items-center gap-1 text-green-700 bg-green-100 px-2 py-0.5 rounded-full text-xs font-semibold">
+                <BadgeCheck className="w-4 h-4" /> Verified
+              </span>
+            )}
+          </div>
+          <p className="text-gray-500 text-sm">{profile.email}</p>
         </div>
 
         {/* Two-column layout */}
@@ -180,13 +184,6 @@ export default function ProfilePage() {
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Logout */}
-        <div className="flex justify-center mt-8">
-          <button className="w-full sm:w-auto px-6 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition">
-            Logout
-          </button>
         </div>
       </div>
     </div>

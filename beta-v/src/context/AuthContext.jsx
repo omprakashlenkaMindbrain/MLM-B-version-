@@ -1,55 +1,67 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Create context
+// Create the context
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
+  const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem("user");
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
-
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    const savedAuth = localStorage.getItem("isAuth");
-    return savedAuth === "true"; // localStorage stores strings
-  });
-
-  // Sync state with localStorage whenever user or isLoggedIn changes
+  // 🔹 Check localStorage on startup
   useEffect(() => {
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("isAuth", "true");
-    } else {
-      localStorage.removeItem("user");
-      localStorage.removeItem("rememberedUser");
-      localStorage.setItem("isAuth", "false");
-    }
-  }, [user]);
+    const savedUser = localStorage.getItem("user");
+    const isAuth = localStorage.getItem("isAuth");
 
-  // Login function
+    if (savedUser && isAuth === "true") {
+      setUser(JSON.parse(savedUser));
+      setIsLoggedIn(true);
+    } else {
+      setUser(null);
+      setIsLoggedIn(false);
+    }
+
+    setLoading(false);
+  }, []);
+
+  // 🔹 Login
   const login = (userData) => {
     setUser(userData);
     setIsLoggedIn(true);
-    navigate("/"); // redirect to home
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("isAuth", "true");
+    navigate("/");
   };
 
-  // Logout function
+  // 🔹 Signup
+  const signup = (userData) => {
+    setUser(userData);
+    setIsLoggedIn(true);
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("isAuth", "true");
+    navigate("/");
+  };
+
+  // 🔹 Logout
   const logout = () => {
     setUser(null);
     setIsLoggedIn(false);
-    navigate("/login"); // redirect to login
+    localStorage.removeItem("user");
+    localStorage.setItem("isAuth", "false");
+    navigate("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, isLoggedIn, loading, login, signup, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Custom hook to use auth
+// Custom hook
 export const useAuth = () => useContext(AuthContext);

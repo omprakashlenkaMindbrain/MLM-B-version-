@@ -1,4 +1,6 @@
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 
 const steps = [
   {
@@ -22,11 +24,24 @@ export default function HowItWorks() {
   const directions = ["left", "top", "right"];
 
   const cardVariants = {
-    left: { opacity: 0, x: -100 },
-    right: { opacity: 0, x: 100 },
-    top: { opacity: 0, y: -100 },
-    bottom: { opacity: 0, y: 100 },
-    visible: { opacity: 1, x: 0, y: 0 },
+    hidden: (direction) => {
+      switch (direction) {
+        case "left":
+          return { opacity: 0, x: -80, y: 0 };
+        case "right":
+          return { opacity: 0, x: 80, y: 0 };
+        case "top":
+          return { opacity: 0, y: -80, x: 0 };
+        default:
+          return { opacity: 0, y: 80, x: 0 };
+      }
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      transition: { duration: 0.9, ease: "easeOut" },
+    },
   };
 
   return (
@@ -34,34 +49,51 @@ export default function HowItWorks() {
       <h2 className="text-3xl sm:text-4xl font-extrabold text-green-900 mb-12 text-center">
         How It Works
       </h2>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {steps.map((step, idx) => (
-          <motion.div
-            key={idx}
-            className="bg-white rounded-3xl p-8 flex flex-col items-center text-center relative shadow-lg hover:shadow-2xl transition-transform duration-500 hover:scale-105 border border-gray-200"
-            initial={cardVariants[directions[idx % directions.length]]}
-            whileInView={cardVariants.visible}
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{ type: "spring", bounce: 0.3, duration: 0.8, delay: idx * 0.2 }}
-          >
-            {/* Floating Icon */}
+        {steps.map((step, idx) => {
+          const controls = useAnimation();
+          const [ref, inView] = useInView({ threshold: 0.3, triggerOnce: true });
+
+          useEffect(() => {
+            if (inView) controls.start("visible");
+          }, [inView, controls]);
+
+          return (
             <motion.div
-              className="text-5xl mb-4"
-              animate={{ y: [0, -10, 0] }}
-              transition={{ repeat: Infinity, duration: 2 }}
+              key={idx}
+              ref={ref}
+              className="bg-white rounded-3xl p-8 flex flex-col items-center text-center relative shadow-lg hover:shadow-2xl transition-transform duration-500 hover:scale-105 border border-gray-200"
+              custom={directions[idx % directions.length]}
+              variants={cardVariants}
+              initial="hidden"
+              animate={controls}
+              transition={{
+                type: "spring",
+                stiffness: 60,
+                damping: 15,
+                delay: idx * 0.2,
+              }}
             >
-              {step.icon}
+              {/* Floating Icon */}
+              <motion.div
+                className="text-5xl mb-4"
+                animate={{ y: [0, -10, 0] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+                {step.icon}
+              </motion.div>
+
+              {/* Animated Number Circle */}
+              <div className="mb-4 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-green-400 via-green-300 to-green-400 text-white font-bold text-xl shadow-lg animate-pulse">
+                {idx + 1}
+              </div>
+
+              <h3 className="text-xl font-semibold text-green-800 mb-2">{step.title}</h3>
+              <p className="text-gray-600 text-base">{step.text}</p>
             </motion.div>
-
-            {/* Animated Number Circle */}
-            <div className="mb-4 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-green-400 via-green-300 to-green-400 text-white font-bold text-xl shadow-lg animate-pulse">
-              {idx + 1}
-            </div>
-
-            <h3 className="text-xl font-semibold text-green-800 mb-2">{step.title}</h3>
-            <p className="text-gray-600 text-base">{step.text}</p>
-          </motion.div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

@@ -67,9 +67,9 @@ export default function LoginPage() {
         <div className="bg-white rounded-3xl shadow-2xl p-8 border border-[#81B633]/20">
           {/* Header */}
           <div className="mb-6 text-center">
-            <div className="w-14 h-14 mx-auto bg-[#0E562B] text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg">
+            <Link to="/" className="w-14 h-14 mx-auto bg-[#0E562B] text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg">
               BM
-            </div>
+            </Link>
             <h1 className="text-3xl font-bold text-[#0E562B] mb-2">Welcome Back</h1>
             <p className="text-gray-600 text-sm">Sign in to continue to BM2 Mall</p>
           </div>

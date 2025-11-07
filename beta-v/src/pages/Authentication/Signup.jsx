@@ -1,6 +1,7 @@
 import { ArrowRight, Eye, EyeOff, Lock, Mail, Phone, User } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,7 +13,9 @@ export default function SignupPage() {
     password: "",
   });
 
-  const navigate=useNavigate();
+
+  const {signup}=useAuth();
+
 
 
 
@@ -55,10 +58,9 @@ export default function SignupPage() {
       setIsLoading(false);
 
 
+      signup({user:formData.name});
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      
   };
 
   const inputClass = "w-full px-3 py-2 text-sm outline-none";
@@ -71,9 +73,9 @@ export default function SignupPage() {
         <div className="bg-white rounded-2xl shadow-xl p-6 border border-[#81B633]/30">
           {/* Header */}
           <div className="mb-6 text-center">
-            <div className="w-12 h-12 mx-auto bg-[#0E562B] text-white rounded-full flex items-center justify-center font-bold text-lg mb-3">
+            <Link to="/" className="w-12 h-12 mx-auto bg-[#0E562B] text-white rounded-full flex items-center justify-center font-bold text-lg mb-3">
               BM
-            </div>
+            </Link>
             <h1 className="text-2xl font-bold text-[#0E562B] mb-1">Create Account</h1>
             <p className="text-gray-600 text-sm">Join BM2 Mall and manage your account securely</p>
           </div>
