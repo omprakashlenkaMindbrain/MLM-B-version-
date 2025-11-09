@@ -4,18 +4,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 export default function LoginPage() {
-  const { login, isLoggedIn } = useAuth();
+  const { login, isLoggedIn, loading, error } = useAuth();
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [formData, setFormData] = useState({
-    phone: "",
+    mobno: "",
     password: "",
   });
 
-  // Redirect if already logged in
   useEffect(() => {
     if (isLoggedIn) navigate("/");
   }, [isLoggedIn, navigate]);
@@ -25,37 +23,26 @@ export default function LoginPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    // Validation
-    if (!formData.phone || !formData.password) {
+    if (!formData.mobno || !formData.password) {
       alert("Please fill in all fields");
-      setIsLoading(false);
       return;
     }
 
-    if (!/^\d{10}$/.test(formData.phone)) {
+    if (!/^\d{10}$/.test(formData.mobno)) {
       alert("Please enter a valid 10-digit phone number");
-      setIsLoading(false);
       return;
     }
 
-    // Simulate login API call
-    setTimeout(() => {
-      // Save login info if "Remember me" checked
-      if (rememberMe) {
-        localStorage.setItem("rememberedUser", JSON.stringify(formData));
-      } else {
-        localStorage.removeItem("rememberedUser");
-      }
-
-      // Use context login function
-      login({ phone: formData.phone });
-      setIsLoading(false);
-    }, 1000);
+    try {
+      await login(formData);
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
   };
+
 
   const inputClass = "w-full px-3 py-2 text-sm outline-none placeholder-gray-400";
 
@@ -67,7 +54,10 @@ export default function LoginPage() {
         <div className="bg-white rounded-3xl shadow-2xl p-8 border border-[#81B633]/20">
           {/* Header */}
           <div className="mb-6 text-center">
-            <Link to="/" className="w-14 h-14 mx-auto bg-[#0E562B] text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg">
+            <Link
+              to="/"
+              className="w-14 h-14 mx-auto bg-[#0E562B] text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg"
+            >
               BM
             </Link>
             <h1 className="text-3xl font-bold text-[#0E562B] mb-2">Welcome Back</h1>
@@ -81,9 +71,9 @@ export default function LoginPage() {
               <Phone size={18} className="text-gray-400" />
               <input
                 type="tel"
-                name="phone"
+                name="mobno"
                 placeholder="Phone Number"
-                value={formData.phone}
+                value={formData.mobno}
                 onChange={handleChange}
                 maxLength="10"
                 className={inputClass}
@@ -126,13 +116,16 @@ export default function LoginPage() {
               </a>
             </div>
 
+            {/* Error Message */}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+
             {/* Submit */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={loading}
               className="w-full flex items-center justify-center bg-green-700 hover:bg-[#74a82e] text-white py-2 rounded-md font-medium mt-2 transition-all"
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {loading ? "Signing in..." : "Sign in"}
               <ArrowRight size={18} className="ml-2" />
             </button>
           </form>

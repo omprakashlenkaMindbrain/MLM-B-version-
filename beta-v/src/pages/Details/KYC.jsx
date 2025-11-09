@@ -1,101 +1,114 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useKycUpload } from "../../hooks/kyc/useKyc";
 
-const PRIMARY = "#16a34a"; // BM2 Green
+const PRIMARY = "#16a34a";
 const BG_LIGHT = "#f4f8f6";
 
 export default function KYCPage() {
   const [aadhaar, setAadhaar] = useState(null);
   const [pan, setPan] = useState(null);
-  const [showNotification, setShowNotification] = useState(false);
+  const [showSlow, setShowSlow] = useState(false);
+  const [uploadTime, setUploadTime] = useState(0);
+
+  const { uploadKyc, loading, error } = useKycUpload();
+  const timerRef = useRef(null);
 
   const handleFileChange = (e, setter) => {
-    const file = e.target.files[0];
+    const file = e.target.files && e.target.files[0];
     if (file) setter(file);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (aadhaar && pan) {
-      console.log("Aadhaar File:", aadhaar);
-      console.log("PAN File:", pan);
-      alert("✅ KYC Details Submitted Successfully!");
-      setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 3000);
+    if (!aadhaar || !pan) return;
+
+    setUploadTime(0);
+    setShowSlow(false);
+
+    timerRef.current = setInterval(() => {
+      setUploadTime((prev) => {
+        if (prev + 1 >= 3) setShowSlow(true);
+        return prev + 1;
+      });
+    }, 1000);
+
+    try {
+      await uploadKyc({ adharFile: aadhaar, panFile: pan });
+      alert("✅ KYC Documents Submitted Successfully!");
       setAadhaar(null);
       setPan(null);
+    } catch (err) {
+      alert("❌ Upload failed: " + err?.message);
+    } finally {
+      if (timerRef.current) clearInterval(timerRef.current);
+      setUploadTime(0);
+      setShowSlow(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 py-10 sm:px-6 overflow-hidden" style={{ backgroundColor: BG_LIGHT }}>
-      {/* Subtle Animated Gradient Blobs */}
-      <div className="absolute top-[-150px] left-[-100px] w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-green-200 to-green-400 opacity-30 filter blur-2xl animate-blob-slow"></div>
-      <div className="absolute bottom-[-180px] right-[-120px] w-[550px] h-[550px] rounded-full bg-gradient-to-tr from-blue-200 to-blue-400 opacity-25 filter blur-2xl animate-blob-slow animation-delay-3000"></div>
-
-      {/* Notification */}
-      {showNotification && (
-        <div
-          className="fixed top-6 right-6 px-6 py-3 z-50 rounded-lg shadow-lg flex items-center gap-2 animate-slide-in"
-          style={{ backgroundColor: PRIMARY, color: "#fff" }}
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-          <span className="font-medium">KYC Documents Submitted Successfully!</span>
-        </div>
-      )}
-
-      {/* KYC Form */}
+    <div
+      className="relative min-h-screen flex items-center justify-center px-4 py-10 sm:px-6 overflow-hidden"
+      style={{ backgroundColor: BG_LIGHT }}
+    >
+      {/* Animated Blobs with motion */}
+      <div className="absolute z-0 top-[-150px] left-[-100px] w-[500px] h-[500px] bg-gradient-to-tr from-green-200 to-green-400 opacity-25 rounded-full filter blur-3xl animate-pulse" />
+      <div className="absolute z-0 bottom-[-180px] right-[-120px] w-[550px] h-[550px] bg-gradient-to-tr from-blue-200 to-blue-400 opacity-20 rounded-full filter blur-3xl animate-pulse" />
+      
       <form
         onSubmit={handleSubmit}
-        className="relative w-full max-w-lg bg-white rounded-2xl shadow-xl border border-gray-200 p-8 sm:p-10 flex flex-col items-center transition-all duration-300 z-10"
+        className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-100 p-5 sm:p-8 flex flex-col items-center z-10 transition-all duration-500"
       >
-        <div className="flex flex-col items-center mb-8">
+        {/* Header */}
+        <div className="flex flex-col items-center mb-8 w-full">
           <div
             style={{ backgroundColor: PRIMARY }}
-            className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-2xl mb-3 shadow-md"
+            className="w-14 h-14 rounded-full flex items-center justify-center text-white font-extrabold text-xl mb-2 shadow-lg"
           >
             BM2
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-1">
             Upload Your KYC Documents
           </h1>
-          <p className="text-sm text-gray-500 text-center max-w-sm">
-            Please upload your Aadhaar and PAN card for verification. This helps us keep
-            your account secure and verified.
+          <p className="text-sm text-gray-400 text-center">
+            Upload your Aadhaar and PAN card for verification.
           </p>
         </div>
 
         {/* Aadhaar Upload */}
-        <div className="w-full mb-5 bg-[#f9fafb] border border-dashed border-gray-300 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <span className="text-base font-medium text-gray-800">1️⃣ Upload Aadhaar</span>
+        <div className="w-full mb-5 bg-gray-50 border border-dashed border-gray-300 rounded-xl p-4 flex flex-row flex-wrap items-center justify-between gap-3 hover:shadow-lg transition-all duration-300">
+          <div className="flex flex-row flex-wrap items-center gap-3 min-w-0">
+            <span className="text-base font-semibold text-gray-800">1️⃣ Aadhaar</span>
             {aadhaar && (
-              <span className="text-gray-700 text-sm font-medium bg-gray-100 px-2 py-1 rounded">{aadhaar.name}</span>
+              <span
+                className="text-gray-600 text-xs font-medium bg-gray-100 px-2 py-1 rounded max-w-[140px] sm:max-w-[200px] truncate"
+                title={aadhaar.name}
+                style={{
+                  display: 'inline-block',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {aadhaar.name}
+              </span>
             )}
           </div>
           {aadhaar ? (
             <button
               type="button"
-              className="text-sm font-semibold text-red-600 hover:text-red-800"
+              className="rounded text-xs font-bold text-red-600 px-2 py-1 transition-all hover:bg-red-50"
               onClick={() => setAadhaar(null)}
             >
-              Remove
+              ✕ Remove
             </button>
           ) : (
-            <label className="cursor-pointer text-sm font-semibold text-[var(--accent,#16a34a)] hover:underline">
+            <label className="cursor-pointer text-xs font-bold text-green-700 hover:text-green-900 transition-all hover:underline">
               <input
                 type="file"
                 accept=".png,.jpg,.jpeg,.pdf"
                 onChange={(e) => handleFileChange(e, setAadhaar)}
                 className="hidden"
-                required={!aadhaar}
               />
               Choose File
             </label>
@@ -103,66 +116,79 @@ export default function KYCPage() {
         </div>
 
         {/* PAN Upload */}
-        <div className="w-full mb-8 bg-[#f9fafb] border border-dashed border-gray-300 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <span className="text-base font-medium text-gray-800">2️⃣ Upload PAN</span>
+        <div className="w-full mb-8 bg-gray-50 border border-dashed border-gray-300 rounded-xl p-4 flex flex-row flex-wrap items-center justify-between gap-3 hover:shadow-lg transition-all duration-300">
+          <div className="flex flex-row flex-wrap items-center gap-3 min-w-0">
+            <span className="text-base font-semibold text-gray-800">2️⃣ PAN</span>
             {pan && (
-              <span className="text-gray-700 text-sm font-medium bg-gray-100 px-2 py-1 rounded">{pan.name}</span>
+              <span
+                className="text-gray-600 text-xs font-medium bg-gray-100 px-2 py-1 rounded max-w-[140px] sm:max-w-[200px] truncate"
+                title={pan.name}
+                style={{
+                  display: 'inline-block',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {pan.name}
+              </span>
             )}
           </div>
           {pan ? (
             <button
               type="button"
-              className="text-sm font-semibold text-red-600 hover:text-red-800"
+              className="rounded text-xs font-bold text-red-600 px-2 py-1 transition-all hover:bg-red-50"
               onClick={() => setPan(null)}
             >
-              Remove
+              ✕ Remove
             </button>
           ) : (
-            <label className="cursor-pointer text-sm font-semibold text-[var(--accent,#16a34a)] hover:underline">
+            <label className="cursor-pointer text-xs font-bold text-green-700 hover:text-green-900 transition-all hover:underline">
               <input
                 type="file"
                 accept=".png,.jpg,.jpeg,.pdf"
                 onChange={(e) => handleFileChange(e, setPan)}
                 className="hidden"
-                required={!pan}
               />
               Choose File
             </label>
           )}
         </div>
 
+        {/* Loader and Submit */}
         <button
           type="submit"
-          disabled={!aadhaar || !pan}
-          className="w-full py-3 rounded-xl font-bold text-white text-lg transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
-          style={{ backgroundColor: PRIMARY }}
+          disabled={!aadhaar || !pan || loading}
+          className="w-full py-3 rounded-xl font-bold text-white text-lg transition-all duration-300 shadow-md hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+          style={{ backgroundColor: PRIMARY, cursor:"pointer" }}
         >
-          Submit KYC Documents
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <svg className="w-5 h-5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+              </svg>
+              <span>
+                {showSlow ? "Network is slow, please wait..." : "Uploading..."}
+                {uploadTime > 1 && (
+                  <span className="ml-2 text-xs font-normal">
+                    ({uploadTime}s)
+                  </span>
+                )}
+              </span>
+            </span>
+          ) : (
+            "Submit KYC Documents"
+          )}
         </button>
 
-        <p className="text-xs text-gray-500 text-center mt-5">
-          *Your uploaded documents are encrypted and stored securely.
+        {/* Error Message */}
+        {error && <p className="text-red-600 mt-3 text-xs text-center">{error}</p>}
+
+        <p className="text-xs text-gray-400 text-center mt-6">
+          *Your documents are encrypted and stored securely.
         </p>
       </form>
-
-      {/* Styles */}
-      <style jsx>{`
-        @keyframes blob {
-          0% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(30px, -40px) scale(1.05); }
-          66% { transform: translate(-20px, 20px) scale(0.95); }
-          100% { transform: translate(0, 0) scale(1); }
-        }
-        .animate-blob-slow { animation: blob 12s infinite ease-in-out; }
-        .animation-delay-3000 { animation-delay: 3s; }
-
-        @keyframes slide-in {
-          0% { opacity: 0; transform: translateY(-20px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide-in { animation: slide-in 0.4s ease-out forwards; }
-      `}</style>
     </div>
   );
 }
