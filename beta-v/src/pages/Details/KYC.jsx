@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import Swal from "sweetalert2";
 import { useKycUpload } from "../../hooks/kyc/useKyc";
 
 const PRIMARY = "#16a34a";
@@ -20,7 +21,17 @@ export default function KYCPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!aadhaar || !pan) return;
+
+    // 🧾 Validation with SweetAlert2
+    if (!aadhaar || !pan) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Documents",
+        text: "Please upload both Aadhaar and PAN card before submitting.",
+        confirmButtonColor: PRIMARY,
+      });
+      return;
+    }
 
     setUploadTime(0);
     setShowSlow(false);
@@ -34,11 +45,25 @@ export default function KYCPage() {
 
     try {
       await uploadKyc({ adharFile: aadhaar, panFile: pan });
-      alert("✅ KYC Documents Submitted Successfully!");
+
+      // ✅ Success Alert
+      Swal.fire({
+        icon: "success",
+        title: "KYC Submitted Successfully!",
+        text: "Your documents have been uploaded and are under verification.",
+        confirmButtonColor: PRIMARY,
+      });
+
       setAadhaar(null);
       setPan(null);
     } catch (err) {
-      alert("❌ Upload failed: " + err?.message);
+      // ❌ Error Alert
+      Swal.fire({
+        icon: "error",
+        title: "Upload Failed",
+        text: err?.message || "Something went wrong. Please try again.",
+        confirmButtonColor: "#d33",
+      });
     } finally {
       if (timerRef.current) clearInterval(timerRef.current);
       setUploadTime(0);
@@ -51,10 +76,10 @@ export default function KYCPage() {
       className="relative min-h-screen flex items-center justify-center px-4 py-10 sm:px-6 overflow-hidden"
       style={{ backgroundColor: BG_LIGHT }}
     >
-      {/* Animated Blobs with motion */}
+      {/* Animated Blobs */}
       <div className="absolute z-0 top-[-150px] left-[-100px] w-[500px] h-[500px] bg-gradient-to-tr from-green-200 to-green-400 opacity-25 rounded-full filter blur-3xl animate-pulse" />
       <div className="absolute z-0 bottom-[-180px] right-[-120px] w-[550px] h-[550px] bg-gradient-to-tr from-blue-200 to-blue-400 opacity-20 rounded-full filter blur-3xl animate-pulse" />
-      
+
       <form
         onSubmit={handleSubmit}
         className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-100 p-5 sm:p-8 flex flex-col items-center z-10 transition-all duration-500"
@@ -83,12 +108,6 @@ export default function KYCPage() {
               <span
                 className="text-gray-600 text-xs font-medium bg-gray-100 px-2 py-1 rounded max-w-[140px] sm:max-w-[200px] truncate"
                 title={aadhaar.name}
-                style={{
-                  display: 'inline-block',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
               >
                 {aadhaar.name}
               </span>
@@ -123,12 +142,6 @@ export default function KYCPage() {
               <span
                 className="text-gray-600 text-xs font-medium bg-gray-100 px-2 py-1 rounded max-w-[140px] sm:max-w-[200px] truncate"
                 title={pan.name}
-                style={{
-                  display: 'inline-block',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
               >
                 {pan.name}
               </span>
@@ -155,25 +168,38 @@ export default function KYCPage() {
           )}
         </div>
 
-        {/* Loader and Submit */}
+        {/* Loader & Submit */}
         <button
           type="submit"
           disabled={!aadhaar || !pan || loading}
           className="w-full py-3 rounded-xl font-bold text-white text-lg transition-all duration-300 shadow-md hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-          style={{ backgroundColor: PRIMARY, cursor:"pointer" }}
+          style={{ backgroundColor: PRIMARY, cursor: "pointer" }}
         >
           {loading ? (
             <span className="flex items-center gap-2">
-              <svg className="w-5 h-5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+              <svg
+                className="w-5 h-5 animate-spin text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8z"
+                ></path>
               </svg>
               <span>
                 {showSlow ? "Network is slow, please wait..." : "Uploading..."}
                 {uploadTime > 1 && (
-                  <span className="ml-2 text-xs font-normal">
-                    ({uploadTime}s)
-                  </span>
+                  <span className="ml-2 text-xs font-normal">({uploadTime}s)</span>
                 )}
               </span>
             </span>

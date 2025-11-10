@@ -1,205 +1,304 @@
+"use client"
+
 import {
   BadgeCheck,
-  CheckCircle,
+  Briefcase,
+  CreditCard,
+  Edit2,
   Eye,
   FileText,
-  Loader2,
-  Pencil,
-  User,
-  XCircle,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { useEditUser } from "../../hooks/user/useEditUser";
+  Award as IdCard,
+  Mail,
+  Save,
+  X,
+} from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { useAuth } from "../../context/AuthContext"
+import { getAuthUse } from "../../hooks/user/getAuthUse"
 
 export default function ProfilePage() {
-  const { user: authUser } = useAuth();
-  const [profile, setProfile] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-
-  const { editUser, loading, error, successMsg } = useEditUser();
+  const { getaccesstoken } = useAuth()
+  const { getLoggedinuser } = getAuthUse()
+  const [profile, setProfile] = useState(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const [modified, setModified] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+  const formRef = useRef(null)
 
   useEffect(() => {
-    if (authUser) setProfile(authUser.user);
-  }, [authUser]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProfile((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleToggleEdit = async () => {
-    if (isEditing) {
+    const fetchProfile = async () => {
+      if (!getaccesstoken) return
+      setLoading(true)
       try {
-        await editUser(
-          {
-            name: profile.name,
-            email: profile.email,
-            mobno: profile.mobno,
-          },
-          authUser.token
-        );
-        alert("✅ Profile updated successfully!");
+        const res = await getLoggedinuser(getaccesstoken)
+        if (res && res.data && res.data.user) {
+          setProfile(res.data.user)
+        } else {
+          setError("No profile data found")
+        }
       } catch (err) {
-        alert(`❌ ${err.message}`);
+        console.error(err)
+        setError("Failed to fetch profile")
+      } finally {
+        setLoading(false)
       }
     }
-    setIsEditing((prev) => !prev);
-  };
 
-  if (!profile)
-    return <div className="text-center mt-10 text-gray-600">Loading...</div>;
+    fetchProfile()
+  }, [getaccesstoken])
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (formRef.current && !formRef.current.contains(e.target)) {
+        setIsEditing(false)
+        setModified(false)
+      }
+    }
+
+    if (isEditing) {
+      document.addEventListener("mousedown", handleClickOutside)
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [isEditing])
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setProfile((prev) => (prev ? { ...prev, [name]: value } : null))
+    setModified(true)
+  }
+
+  const handleSave = () => {
+    if (!modified) return
+    // Replace with real API call to update profile
+    console.log("Saving profile:", profile)
+    setIsEditing(false)
+    setModified(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-full border-4 border-slate-300 border-t-green-900 animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 font-medium">Loading profile...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-600 font-medium">
+        {error}
+      </div>
+    )
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-slate-600 font-medium">
+        No profile data available
+      </div>
+    )
+  }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#f1f5f9] via-[#fafcff] to-[#c3e8ff] flex justify-center items-start py-14 px-4 sm:px-8">
-      <article className="max-w-7xl w-full grid grid-cols-1 xl:grid-cols-6 gap-10">
-        {/* Profile Info */}
-        <section className="xl:col-span-2 bg-white rounded-3xl shadow-lg p-8 flex flex-col items-center relative">
-          <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-green-700 w-20 h-20 rounded-full flex items-center justify-center shadow-md hover:bg-green-600 transition">
-            <User className="w-10 h-10 text-white" />
-          </div>
-          <h2 className="mt-14 text-3xl font-extrabold text-gray-800">{profile.name}</h2>
-          {profile.verified && (
-            <span className="mt-2 inline-flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold shadow-sm border">
-              <BadgeCheck className="w-5 h-5" /> Verified
-            </span>
-          )}
-          <p className="mt-1 text-sm text-gray-600 break-words">{profile.email}</p>
-          <p className="text-xs text-gray-500 mt-3">Last login: Nov 8, 2025</p>
-
-          {/* Tracking ID section */}
-          {profile.trackingId && (
-            <div className="mt-8 w-full bg-blue-50 border border-blue-300 rounded-xl p-4 text-center">
-              <div className="flex justify-center items-center gap-3 text-blue-700 font-semibold text-lg sm:text-xl">
-                <Eye className="w-6 h-6" />
-                <span>Your Tracking ID: {profile.trackingId}</span>
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-slate-100 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header Card */}
+        <div className="relative mb-8 rounded-2xl overflow-hidden shadow-xl bg-white">
+          <div className="h-32 sm:h-48 bg-gradient-to-r from-green-900 via-green-800 to-green-700 relative"></div>
+          <div className="px-6 sm:px-8 pb-6">
+            <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-16 relative z-10 mb-6">
+              <div className="w-32 h-32 rounded-2xl bg-green-900 shadow-lg flex items-center justify-center text-white text-4xl font-bold border-4 border-white">
+                {profile.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase()}
               </div>
-              <p className="mt-2 text-xs text-blue-600 italic max-w-xs mx-auto sm:max-w-md">
-                Here it is your tracking id, through this id you can add two members under you.
-              </p>
-            </div>
-          )}
-        </section>
 
-        {/* Details and Documents */}
-        <section className="xl:col-span-4 grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Account Details */}
-          <div className="bg-white border-2 border-blue-100 rounded-3xl shadow-lg p-6">
-            <header className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-blue-900 flex items-center gap-2">
-                <User className="w-5 h-5" /> Account Details
-              </h3>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">{profile.name}</h1>
+                  {profile.verified && <BadgeCheck className="w-8 h-8 text-green-900" />}
+                </div>
+                <p className="text-slate-600 mb-3">Member ID: {profile.memId}</p>
+              </div>
+
               <button
-                onClick={handleToggleEdit}
-                disabled={loading}
-                className={`flex items-center gap-2 px-5 py-2 rounded-xl font-semibold shadow-sm transition ${
-                  loading
-                    ? "bg-gray-300 text-gray-400 cursor-not-allowed"
-                    : isEditing
-                    ? "bg-green-600 text-white hover:bg-green-700"
-                    : "bg-blue-700 text-white hover:bg-blue-800"
-                }`}
+                onClick={() => setIsEditing(!isEditing)}
+                className="self-start sm:self-center px-6 py-2 rounded-lg bg-green-900 text-white hover:bg-green-800 transition font-semibold flex items-center gap-2 shadow-md hover:shadow-lg"
               >
-                {loading && <Loader2 className="animate-spin w-5 h-5" />}
-                {!loading && (
+                {isEditing ? (
                   <>
-                    <Pencil className="w-5 h-5" />
-                    {isEditing ? " Save" : " Edit"}
+                    <X className="w-4 h-4" />
+                    Cancel
+                  </>
+                ) : (
+                  <>
+                    <Edit2 className="w-4 h-4" />
+                    Edit Profile
                   </>
                 )}
               </button>
-            </header>
+            </div>
 
-            <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-              {[
-                { label: "Name", name: "name", type: "text", value: profile.name },
-                { label: "Email", name: "email", type: "email", value: profile.email },
-                { label: "Phone", name: "mobno", type: "text", value: profile.mobno || "" },
-              ].map(({ label, name, type, value }) => (
-                <div key={name}>
-                  <label className="block text-gray-600 font-semibold mb-1">{label}</label>
-                  <input
-                    type={type}
-                    name={name}
-                    value={value}
-                    onChange={handleChange}
-                    readOnly={!isEditing}
-                    className={`w-full rounded-lg px-4 py-2 text-gray-800 bg-gray-50 focus:outline-none transition ${
-                      isEditing
-                        ? "border-2 border-blue-400 focus:ring-2 focus:ring-blue-300"
-                        : "border border-gray-200 cursor-not-allowed"
-                    }`}
-                  />
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 pt-6 border-t border-slate-200">
+              <div>
+                <p className="text-sm text-slate-600">Joined</p>
+                <p className="font-semibold text-slate-900">
+                  {new Date(profile.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-slate-600">Status</p>
+                <p className="font-semibold text-green-700">Verified</p>
+              </div>
+              <div>
+                <p className="text-sm text-slate-600">Plan</p>
+                <p className="font-semibold text-slate-900">{profile.plan?.plan_name || "Standard"}</p>
+              </div>
+              <div>
+                <p className="text-sm text-slate-600">Referrals</p>
+                <p className="font-semibold text-slate-900">{profile.referralCount ?? 0}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Editable Form & Details */}
+        <div ref={formRef} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left - Contact & Social */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <Mail className="w-5 h-5 text-green-900" /> Contact
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Email</p>
+                  <a href={`mailto:${profile.email}`} className="text-green-900 font-medium break-all">
+                    {profile.email}
+                  </a>
                 </div>
-              ))}
-            </form>
-
-            {error && <p className="text-red-600 text-xs mt-2">❌ {error}</p>}
-            {successMsg && <p className="text-green-600 text-xs mt-2">✅ {successMsg}</p>}
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Phone</p>
+                  <a href={`tel:${profile.mobno}`} className="text-green-900 font-medium">
+                    {profile.mobno}
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Documents & Subscription */}
-          <div className="space-y-8">
-            <section className="bg-white border-2 border-green-100 rounded-3xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-green-800 mb-5 flex items-center gap-2">
-                <FileText className="w-5 h-5" /> Your Documents
-              </h3>
+          {/* Right - Account, Plan, Tracking & KYC */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Account Details */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-green-900" /> Account Details
+                </h2>
+                {isEditing && modified && (
+                  <button
+                    onClick={handleSave}
+                    className="px-4 py-2 rounded-lg bg-green-900 text-white hover:bg-green-800 transition font-semibold flex items-center gap-2"
+                  >
+                    <Save className="w-4 h-4" /> Save
+                  </button>
+                )}
+              </div>
 
-              {[
-                { id: "aadhaar", name: "Aadhaar Card", file: "aadhaar.pdf", verified: true },
-                { id: "pan", name: "PAN Card", file: "pan.pdf", verified: false },
-              ].map(({ id, name, file, verified }) => (
-                <div
-                  key={id}
-                  className="flex justify-between items-center py-3 px-4 rounded-lg bg-gray-50 shadow transition"
-                >
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-5 h-5 text-gray-600" />
-                    <div>
-                      <p className="font-semibold text-gray-900">{name}</p>
-                      <p className="text-xs text-gray-500">{file}</p>
-                    </div>
+              <div className="space-y-4">
+                {["name", "email", "mobno"].map((field) => (
+                  <div key={field}>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 capitalize">
+                      {field === "mobno" ? "Mobile Number" : field}
+                    </label>
+                    <input
+                      type={field === "email" ? "email" : "text"}
+                      name={field}
+                      value={profile[field] || ""}
+                      onChange={handleChange}
+                      readOnly={!isEditing}
+                      className={`w-full px-4 py-2 rounded-lg font-medium transition ${
+                        isEditing
+                          ? "bg-slate-50 border-2 border-green-900 focus:outline-none focus:border-green-800"
+                          : "bg-slate-50 border border-slate-200 text-slate-700 cursor-default"
+                      }`}
+                    />
                   </div>
-                  {verified ? (
-                    <span className="flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold border border-green-500">
-                      <CheckCircle className="w-4 h-4" /> Verified
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1 bg-red-100 text-red-700 px-3 py-1 rounded-full font-semibold border border-red-500">
-                      <XCircle className="w-4 h-4" /> Rejected
-                    </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Plan & Tracking */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl shadow-lg p-6 border border-green-200">
+                <h3 className="text-lg font-bold text-green-900 mb-3 flex items-center gap-2">
+                  <CreditCard className="w-5 h-5" /> Your Plan
+                </h3>
+                <p className="text-3xl font-bold text-green-900 mb-2">{profile.plan?.plan_name || "Standard"}</p>
+                <p className="text-sm text-green-700">Active subscription</p>
+              </div>
+
+              {profile.trackingId && (
+                <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl shadow-lg p-6 border border-green-200">
+                  <h3 className="text-lg font-bold text-green-900 mb-3 flex items-center gap-2">
+                    <Eye className="w-5 h-5" /> Tracking ID
+                  </h3>
+                  <p className="text-2xl font-mono font-bold text-green-900 break-all">{profile.trackingId}</p>
+                  <p className="text-sm text-green-700 mt-2">Use for support inquiries</p>
+                </div>
+              )}
+            </div>
+
+            {/* KYC Documents */}
+            {(profile.kyc?.adhara_img || profile.kyc?.pan_img) && (
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-green-900" /> KYC Documents
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {profile.kyc?.adhara_img && (
+                    <a
+                      href={profile.kyc.adhara_img}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-4 rounded-xl border-2 border-slate-200 hover:border-green-900 transition flex items-center gap-3 group"
+                    >
+                      <IdCard className="w-6 h-6 text-slate-600 group-hover:text-green-900 transition" />
+                      <div>
+                        <p className="font-semibold text-slate-900">Aadhaar Card</p>
+                        <p className="text-sm text-slate-600 group-hover:text-green-900">View Document</p>
+                      </div>
+                    </a>
+                  )}
+                  {profile.kyc?.pan_img && (
+                    <a
+                      href={profile.kyc.pan_img}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-4 rounded-xl border-2 border-slate-200 hover:border-green-900 transition flex items-center gap-3 group"
+                    >
+                      <IdCard className="w-6 h-6 text-slate-600 group-hover:text-green-900 transition" />
+                      <div>
+                        <p className="font-semibold text-slate-900">PAN Card</p>
+                        <p className="text-sm text-slate-600 group-hover:text-green-900">View Document</p>
+                      </div>
+                    </a>
                   )}
                 </div>
-              ))}
-            </section>
-
-            <section className="bg-white border-2 border-yellow-100 rounded-3xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-yellow-600 mb-3 flex items-center gap-2">
-                <CheckCircle className="w-5 h-5" /> Subscription Plan
-              </h3>
-              <div className="rounded-xl p-5 bg-gradient-to-r from-[#1E3A8A] to-[#f59e0b] text-white shadow-md">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-extrabold text-lg">Gold Plan</h4>
-                    <p className="text-sm">$39/month</p>
-                  </div>
-                  <span className="bg-green-600 px-3 py-1 rounded-full text-xs font-bold">
-                    Paid
-                  </span>
-                </div>
-                <ul className="text-sm mt-3 space-y-1 list-disc list-inside">
-                  <li>Aadhaar card base required to get this</li>
-                  <li>Includes all premium benefits</li>
-                  <li>24/7 support and updates</li>
-                </ul>
               </div>
-              <p className="text-xs text-gray-400 mt-3 text-center">
-                Renews on: <time className="font-semibold">October 26, 2024</time>
-              </p>
-            </section>
+            )}
           </div>
-        </section>
-      </article>
+        </div>
+      </div>
     </main>
-  );
+  )
 }

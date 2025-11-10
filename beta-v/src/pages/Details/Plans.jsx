@@ -1,5 +1,6 @@
 import { CheckCircle, Loader2, X } from "lucide-react";
 import { useState } from "react";
+import Swal from "sweetalert2";
 import ScannerIMg from "../../assets/scanner.jpg";
 import { usePlanUpload } from "../../hooks/plans/usePlanUpload";
 
@@ -83,16 +84,44 @@ export default function Plans() {
 
   const handleSubmitPayment = async () => {
     if (!paymentFile) {
-      alert("❌ Please upload payment screenshot before submitting!");
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Screenshot",
+        text: "Please upload your payment screenshot before submitting.",
+        confirmButtonColor: "#0E562B",
+      });
       return;
     }
+
+    const confirm = await Swal.fire({
+      title: "Confirm Upload?",
+      text: `You are about to upload payment for the ${selectedPlan.name} plan.`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#0E562B",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, Upload",
+    });
+
+    if (!confirm.isConfirmed) return;
+
     try {
       await uploadPlan(selectedPlan.name.toLowerCase(), paymentFile);
-      alert(`✅ ${selectedPlan.name} plan uploaded successfully!`);
+      Swal.fire({
+        icon: "success",
+        title: "Payment Uploaded!",
+        text: `${selectedPlan.name} plan uploaded successfully.`,
+        confirmButtonColor: "#0E562B",
+      });
       setShowModal(false);
       setPaymentFile(null);
     } catch (err) {
-      alert(`❌ ${err.message}`);
+      Swal.fire({
+        icon: "error",
+        title: "Upload Failed",
+        text: err.message || "Something went wrong while uploading payment.",
+        confirmButtonColor: "#E63946",
+      });
     }
   };
 
@@ -151,8 +180,6 @@ export default function Plans() {
           </div>
         </div>
       </div>
-
-
 
       {/* Modal */}
       {showModal && selectedPlan && (

@@ -1,6 +1,7 @@
 import { ArrowRight, Eye, EyeOff, Hash, Lock, Mail, Phone, User } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
 
 export default function SignupPage() {
@@ -23,7 +24,6 @@ export default function SignupPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
     if (
       !formData.name ||
       !formData.email ||
@@ -31,12 +31,19 @@ export default function SignupPage() {
       !formData.trackingId ||
       !formData.password
     ) {
-      alert("Please fill in all fields");
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Fields",
+        text: "Please fill in all fields before continuing.",
+        confirmButtonColor: "#0E562B",
+      });
       return;
     }
 
-    await signup(formData); // ✅ handled entirely in AuthContext
+    // Call signup (alerts handled inside AuthContext)
+    await signup(formData);
   };
+
 
   const inputClass = "w-full px-3 py-2 text-sm outline-none";
 
@@ -91,7 +98,7 @@ export default function SignupPage() {
                 type="tel"
                 name="mobno"
                 placeholder="Phone Number"
-                value={formData.phone}
+                value={formData.mobno}
                 onChange={handleChange}
                 maxLength="10"
                 className={inputClass}

@@ -1,6 +1,7 @@
 import { ArrowRight, Eye, EyeOff, Lock, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
 
 export default function LoginPage() {
@@ -26,23 +27,38 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // 🔸 Validation with SweetAlert2
     if (!formData.mobno || !formData.password) {
-      alert("Please fill in all fields");
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Fields",
+        text: "Please fill in both phone number and password.",
+        confirmButtonColor: "#0E562B",
+      });
       return;
     }
 
     if (!/^\d{10}$/.test(formData.mobno)) {
-      alert("Please enter a valid 10-digit phone number");
+      Swal.fire({
+        icon: "error",
+        title: "Invalid Phone Number",
+        text: "Please enter a valid 10-digit phone number.",
+        confirmButtonColor: "#d33",
+      });
       return;
     }
 
     try {
-      await login(formData);
+      await login(formData); // handled in AuthContext (includes success/error alerts)
     } catch (err) {
-      console.error("Login failed:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Login Failed",
+        text: err.message || "Something went wrong. Please try again.",
+        confirmButtonColor: "#d33",
+      });
     }
   };
-
 
   const inputClass = "w-full px-3 py-2 text-sm outline-none placeholder-gray-400";
 

@@ -16,12 +16,12 @@ export const usePlanUpload = () => {
 
       const formData = new FormData();
       formData.append("plan_name", plan_name);
-      formData.append("payment_ss", paymentFile); // must match backend field name
+      formData.append("payment_ss", paymentFile);
 
       const res = await fetch("http://localhost:8030/plan", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${getaccesstoken}`, // required for user auth
+          Authorization: `Bearer ${getaccesstoken}`,
         },
         body: formData,
       });

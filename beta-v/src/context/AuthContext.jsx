@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { getAuthUse } from "../hooks/user/getAuthUse";
 import { useLogin } from "../hooks/user/useLogin";
 import { useSignup } from "../hooks/user/useSignup";
@@ -26,11 +27,22 @@ export const AuthProvider = ({ children }) => {
       const res = await signupAPI(formData);
       if (!res) throw new Error("Signup failed");
 
-      alert("✅ Account created successfully!");
+      await Swal.fire({
+        icon: "success",
+        title: "Account Created!",
+        text: "Your account has been successfully created.",
+        confirmButtonColor: "#0E562B",
+      });
+
       navigate("/login");
     } catch (err) {
-      alert(`❌ ${err.message || "Signup failed"}`);
       setError(err.message || "Signup failed");
+      Swal.fire({
+        icon: "error",
+        title: "Signup Failed",
+        text: err.message || "Something went wrong. Please try again.",
+        confirmButtonColor: "#d33",
+      });
     } finally {
       setLoading(false);
     }
@@ -46,29 +58,64 @@ export const AuthProvider = ({ children }) => {
       if (res && res.accessToken) {
         const token = res.accessToken;
         setGetaccesstoken(token);
+
         const userData = await getLoggedinuser(token);
         setUser(userData);
-        console.log(userData);
         setIsLoggedIn(true);
-        alert("✅ Login successful!");
+
+        await Swal.fire({
+          icon: "success",
+          title: "Welcome!",
+          text: "Login successful.",
+          confirmButtonColor: "#0E562B",
+          timer: 1800,
+          showConfirmButton: false,
+        });
+
         navigate("/");
       } else {
         throw new Error("Invalid credentials");
       }
     } catch (err) {
-      alert(`❌ ${err.message || "Login failed"}`);
       setError(err.message || "Login failed");
+      Swal.fire({
+        icon: "error",
+        title: "Login Failed",
+        text: err.message || "Invalid email or password.",
+        confirmButtonColor: "#d33",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   // 🔹 Logout
-  const logout = () => {
-    setUser(null);
-    setIsLoggedIn(false);
-    alert("👋 Logged out successfully!");
-    navigate("/login");
+  const logout = async () => {
+    const confirm = await Swal.fire({
+      icon: "question",
+      title: "Logout Confirmation",
+      text: "Are you sure you want to log out?",
+      showCancelButton: true,
+      confirmButtonColor: "#0E562B",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, logout",
+    });
+
+    if (confirm.isConfirmed) {
+      setUser(null);
+      setIsLoggedIn(false);
+
+      await Swal.fire({
+        icon: "success",
+        title: "Logged Out",
+        text: "You have been logged out successfully.",
+        confirmButtonColor: "#0E562B",
+        timer: 1800,
+        showConfirmButton: false,
+      });
+
+      navigate("/login");
+    }
   };
 
   return (

@@ -1,5 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { CreditCard, FileText, LogIn, LogOut, Menu, User, X } from "lucide-react";
+import {
+  CreditCard,
+  FileText,
+  LogIn,
+  LogOut,
+  Menu,
+  User,
+  X,
+} from "lucide-react";
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -16,8 +24,15 @@ const Navbar = () => {
     { name: "Profile", path: "/profile", icon: <User size={18} /> },
   ];
 
-  const navLinksBeforeLogin = []; // no nav items before login
+  const navLinksBeforeLogin = [];
   const navLinks = isLoggedIn ? navLinksAfterLogin : navLinksBeforeLogin;
+
+  // ✅ Simple logout (no alert)
+  const handleLogout = () => {
+    logout(); // clear auth context
+    setIsOpen(false); // close mobile menu if open
+    navigate("/login"); // redirect to login
+  };
 
   const handleMobileLinkClick = () => setIsOpen(false);
 
@@ -75,10 +90,10 @@ const Navbar = () => {
             );
           })}
 
-          {/* Logout / Login Buttons */}
+          {/* ✅ Logout / Login Buttons */}
           {isLoggedIn ? (
             <motion.button
-              onClick={logout}
+              onClick={handleLogout}
               whileHover={{
                 scale: 1.05,
                 boxShadow: "0 0 20px rgba(255,255,255,0.4)",
@@ -108,7 +123,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* ✅ Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -136,14 +151,11 @@ const Navbar = () => {
                 </Link>
               ))}
 
-              {/* Mobile Logout/Login */}
+              {/* ✅ Mobile Logout/Login */}
               {isLoggedIn ? (
                 <button
                   className="bg-[#4CAF50] hover:bg-[#81B633] text-white px-5 py-2.5 rounded-xl font-semibold shadow-md w-full text-center flex items-center justify-center gap-2"
-                  onClick={() => {
-                    logout();
-                    setIsOpen(false);
-                  }}
+                  onClick={handleLogout}
                 >
                   <LogOut size={18} color="white" />
                   Logout
