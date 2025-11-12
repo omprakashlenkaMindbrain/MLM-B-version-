@@ -6,13 +6,19 @@ import HowItWorks from "./HowItWorks";
 import TestimonialsSection from "./TestimonialsSection";
 
 export default function Home() {
+  // Define a light background color for the final state
+  const bgLight = "#f8fafc"; 
+  // Define the Deep Blue primary color for the initial state
+  const primaryColor = "#004aad";
+
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Animated Background */}
+      {/* Animated Background: Deep Blue to Light Gray/White transition */}
       <motion.div
         className="absolute inset-0 -z-10"
-        initial={{ backgroundColor: "rgb(34,197,94)", opacity: 0 }}
-        whileInView={{ backgroundColor: "rgb(255,255,255)", opacity: 1 }}
+        initial={{ backgroundColor: primaryColor, opacity: 0 }} // Start with Deep Blue
+        whileInView={{ backgroundColor: bgLight, opacity: 1 }} // Transition to light background
+        transition={{ duration: 1.5, delay: 0.2 }}
       />
 
       <HeroSection />

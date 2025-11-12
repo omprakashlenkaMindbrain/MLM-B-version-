@@ -1,10 +1,27 @@
-import { ArrowRight, Eye, EyeOff, Hash, Lock, Mail, Phone, User } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Hash,
+  Lock,
+  Mail,
+  Phone,
+  User,
+} from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import Logo from "../../assets/bmpl.jpg"; // ✅ Use same logo as admin
 import { useAuth } from "../../context/AuthContext";
 
 export default function SignupPage() {
+  // --- New Color Constants ---
+  const PRIMARY_COLOR = "#004aad"; // Deep Blue
+  const SECONDARY_COLOR = "#fdbb2d"; // Yellow
+  const BG_LIGHT = "#f0f4f8"; // Light background for contrast
+  // ---------------------------
+
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -35,130 +52,182 @@ export default function SignupPage() {
         icon: "warning",
         title: "Missing Fields",
         text: "Please fill in all fields before continuing.",
-        confirmButtonColor: "#0E562B",
+        // Change confirm button color to Primary Deep Blue
+        confirmButtonColor: PRIMARY_COLOR,
       });
       return;
     }
 
-    // Call signup (alerts handled inside AuthContext)
     await signup(formData);
   };
 
-
-  const inputClass = "w-full px-3 py-2 text-sm outline-none";
+  const inputClass =
+    "w-full px-3 py-2 text-sm outline-none bg-transparent focus:ring-0";
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
-      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-[#f2f7f1] to-[#e6f3e4]"></div>
-
-      <div className="w-full max-w-md relative z-10">
-        <div className="bg-white rounded-2xl shadow-xl p-6 border border-[#81B633]/30">
-          <div className="mb-6 text-center">
-            <Link
-              to="/"
-              className="w-12 h-12 mx-auto bg-[#0E562B] text-white rounded-full flex items-center justify-center font-bold text-lg mb-3"
-            >
-              BM
-            </Link>
-            <h1 className="text-2xl font-bold text-[#0E562B] mb-1">Create Account</h1>
-            <p className="text-gray-600 text-sm">
-              Join BM2 Mall and manage your account securely
-            </p>
+    <div 
+      // Update background color to light blue/gray
+      className="relative min-h-screen flex items-center justify-center px-4" 
+      style={{ backgroundColor: BG_LIGHT }}
+    >
+      {/* 🌿 Center Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-200 p-8"
+      >
+        {/* ✅ Logo and Title */}
+        <div className="flex flex-col items-center mb-6">
+          <div 
+            className="w-14 h-14 rounded-full overflow-hidden shadow-md border" 
+            style={{ borderColor: PRIMARY_COLOR }} // Use Primary Color for border accent
+          >
+            <img
+              src={Logo}
+              alt="BMPL Logo"
+              className="w-full h-full object-cover"
+            />
           </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-gray-300 focus-within:border-[#81B633]">
-              <User size={18} className="text-gray-400" />
-              <input
-                type="text"
-                name="name"
-                placeholder="Full Name"
-                value={formData.name}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div className="flex items-center gap-2 border-b border-gray-300 focus-within:border-[#81B633]">
-              <Mail size={18} className="text-gray-400" />
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div className="flex items-center gap-2 border-b border-gray-300 focus-within:border-[#81B633]">
-              <Phone size={18} className="text-gray-400" />
-              <input
-                type="tel"
-                name="mobno"
-                placeholder="Phone Number"
-                value={formData.mobno}
-                onChange={handleChange}
-                maxLength="10"
-                className={inputClass}
-              />
-            </div>
-
-            <div className="flex items-center gap-2 border-b border-gray-300 focus-within:border-[#81B633]">
-              <Hash size={18} className="text-gray-400" />
-              <input
-                type="text"
-                name="trackingId"
-                placeholder="Tracking ID"
-                value={formData.trackingId}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div className="flex items-center gap-2 border-b border-gray-300 focus-within:border-[#81B633] relative">
-              <Lock size={18} className="text-gray-400" />
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full px-3 py-2 text-sm pr-10 outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center bg-green-700 hover:bg-[#74a82e] text-white py-2 text-sm rounded-md font-medium mt-2"
-            >
-              {loading ? "Creating Account..." : "Create Account"}
-              <ArrowRight size={18} className="ml-2" />
-            </button>
-          </form>
-
-          <div className="mt-4 text-center text-gray-500 text-sm">
-            Already have an account?{" "}
-            <Link
-              to="/login"
-              className="text-[#0E562B] hover:underline font-medium"
-            >
-              Sign in
-            </Link>
-          </div>
+          <h1 
+            className="text-2xl font-bold mt-3"
+            style={{ color: PRIMARY_COLOR }} // Use Primary Color for title
+          >
+            Create Your Account
+          </h1>
+          <p className="text-gray-600 text-sm mt-1">
+            Join BM2 Mall to manage your account securely
+          </p>
         </div>
-      </div>
+
+        {/* ✨ Signup Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {[
+            { icon: User, name: "name", placeholder: "Full Name", type: "text" },
+            {
+              icon: Mail,
+              name: "email",
+              placeholder: "Email Address",
+              type: "email",
+            },
+            {
+              icon: Phone,
+              name: "mobno",
+              placeholder: "Phone Number",
+              type: "tel",
+            },
+            {
+              icon: Hash,
+              name: "trackingId",
+              placeholder: "Tracking ID",
+              type: "text",
+            },
+          ].map(({ icon: Icon, name, placeholder, type }) => (
+            <div
+              key={name}
+              // Custom focus styling using inline styles to apply PRIMARY_COLOR
+              className="flex items-center gap-2 border-b border-gray-300 relative"
+              style={{
+                  borderBottomColor: 'rgb(209, 213, 219)', // gray-300 default
+                  boxShadow: `0 1px 0 0 transparent`,
+              }}
+              onFocus={(e) => {
+                  e.currentTarget.style.borderBottomColor = PRIMARY_COLOR;
+                  e.currentTarget.style.boxShadow = `0 1px 0 0 ${PRIMARY_COLOR}`;
+              }}
+              onBlur={(e) => {
+                  e.currentTarget.style.borderBottomColor = 'rgb(209, 213, 219)'; // Reset to gray-300
+                  e.currentTarget.style.boxShadow = `0 1px 0 0 transparent`;
+              }}
+            >
+              <Icon size={18} className="text-gray-400" />
+              <input
+                type={type}
+                name={name}
+                placeholder={placeholder}
+                value={formData[name]}
+                onChange={handleChange}
+                maxLength={name === "mobno" ? 10 : undefined}
+                className={inputClass}
+              />
+            </div>
+          ))}
+
+          {/* Password */}
+          <div 
+            // Custom focus styling using inline styles to apply PRIMARY_COLOR
+            className="flex items-center gap-2 border-b border-gray-300 relative"
+            style={{
+                borderBottomColor: 'rgb(209, 213, 219)',
+                boxShadow: `0 1px 0 0 transparent`,
+            }}
+            onFocus={(e) => {
+                e.currentTarget.style.borderBottomColor = PRIMARY_COLOR;
+                e.currentTarget.style.boxShadow = `0 1px 0 0 ${PRIMARY_COLOR}`;
+            }}
+            onBlur={(e) => {
+                e.currentTarget.style.borderBottomColor = 'rgb(209, 213, 219)';
+                e.currentTarget.style.boxShadow = `0 1px 0 0 transparent`;
+            }}
+          >
+            <Lock size={18} className="text-gray-400" />
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-3 py-2 text-sm pr-10 outline-none bg-transparent"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500"
+              style={{
+                cursor:"pointer"
+              }}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+
+          {error && (
+            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+          )}
+
+          {/* Submit */}
+          <motion.button
+            whileHover={{
+              scale: 1.02,
+              backgroundColor: PRIMARY_COLOR, // Hover color: Deep Blue
+              color: "#fff",
+              boxShadow: `0 0 10px rgba(0, 74, 173, 0.4)`, // Deep Blue Shadow
+            }}
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            disabled={loading}
+            className="w-full flex items-center justify-center text-black py-2 text-sm rounded-lg font-bold mt-4 transition-all duration-300"
+            // Initial color: Yellow Secondary
+            style={{ backgroundColor: SECONDARY_COLOR, cursor:"pointer" }}
+          >
+            {loading ? "Creating Account..." : "Create Account"}
+            <ArrowRight size={18} className="ml-2" />
+          </motion.button>
+        </form>
+
+        {/* Footer */}
+        <div className="mt-6 text-center text-gray-500 text-sm">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            // Update link color to Primary Deep Blue
+            style={{ color: PRIMARY_COLOR }}
+            className="hover:underline font-medium"
+          >
+            Sign in
+          </Link>
+        </div>
+      </motion.div>
     </div>
   );
 }

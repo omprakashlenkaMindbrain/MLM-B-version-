@@ -33,3 +33,16 @@ body {
 }
 
 
+:root {
+  --primary-color: #004aad;     /* Deep Blue (Main brand color) */
+  --secondary-color: #fdbb2d;   /* Yellow (Accent color) */
+  --accent-color: #00bfa6;      /* Optional soft teal for hover/light details */
+  --text-light: #ffffff;        /* White text */
+  --text-dark: #1e293b;         /* Slate dark text */
+  --bg-light: #f8fafc;          /* Page background */
+  --nav-bg: var(--primary-color);
+  --nav-hover: var(--secondary-color);
+}
+
+
+

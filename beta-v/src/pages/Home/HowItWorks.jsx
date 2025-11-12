@@ -21,6 +21,12 @@ const steps = [
 ];
 
 export default function HowItWorks() {
+
+
+  const PRIMARY_NAVY="#1B436D"
+
+
+
   const directions = ["left", "top", "right"];
 
   const cardVariants = {
@@ -46,7 +52,11 @@ export default function HowItWorks() {
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-14 relative z-10">
-      <h2 className="text-3xl sm:text-4xl font-extrabold text-green-900 mb-12 text-center">
+      <h2
+        className="text-3xl sm:text-4xl font-extrabold mb-12 text-center"
+        // Apply Deep Blue Primary Color
+        style={{ color: PRIMARY_NAVY }}
+      >
         How It Works
       </h2>
 
@@ -58,6 +68,15 @@ export default function HowItWorks() {
           useEffect(() => {
             if (inView) controls.start("visible");
           }, [inView, controls]);
+
+          let circleGradient;
+          if (idx === 0) {
+            circleGradient = "from-[#00bfa6] via-[#00e3cd] to-[#00bfa6]";
+          } else if (idx === 1) {
+            circleGradient = "from-[#fdbb2d] via-[#fceb86] to-[#fdbb2d]";
+          } else {
+            circleGradient = "from-[#004aad] via-[#0069e2] to-[#004aad]";
+          }
 
           return (
             <motion.div
@@ -75,7 +94,6 @@ export default function HowItWorks() {
                 delay: idx * 0.2,
               }}
             >
-              {/* Floating Icon */}
               <motion.div
                 className="text-5xl mb-4"
                 animate={{ y: [0, -10, 0] }}
@@ -84,12 +102,18 @@ export default function HowItWorks() {
                 {step.icon}
               </motion.div>
 
-              {/* Animated Number Circle */}
-              <div className="mb-4 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-green-400 via-green-300 to-green-400 text-white font-bold text-xl shadow-lg animate-pulse">
+              <div 
+                className={`mb-4 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r ${circleGradient} text-white font-bold text-xl shadow-lg animate-pulse`}
+              >
                 {idx + 1}
               </div>
 
-              <h3 className="text-xl font-semibold text-green-800 mb-2">{step.title}</h3>
+              <h3 
+                className="text-xl font-semibold mb-2"
+                style={{ color: "#004aad" }} 
+              >
+                {step.title}
+              </h3>
               <p className="text-gray-600 text-base">{step.text}</p>
             </motion.div>
           );

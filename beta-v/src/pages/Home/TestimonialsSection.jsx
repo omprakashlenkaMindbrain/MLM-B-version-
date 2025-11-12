@@ -1,104 +1,125 @@
-"use client"
+import { motion, useAnimation } from "framer-motion";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 
-import { AnimatePresence, motion, usePresenceData, wrap } from "motion/react"
-import { forwardRef, useState } from "react"
-
-const testimonials = [
+const steps = [
   {
-    name: "Jane Doe",
-    feedback:
-      "I doubled my income within months by joining BM2 Mall. The system is easy to use and truly rewarding.",
-    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
-    position: "Top Affiliate",
+    title: "Sign Up",
+    text: "Create your free account to get started as an affiliate with BM2 Mall.",
+    icon: "📝",
   },
   {
-    name: "John Smith",
-    feedback:
-      "The transparent plans and community support made me confident in building my team here.",
-    avatar: "https://randomuser.me/api/portraits/men/52.jpg",
-    position: "Senior Affiliate",
+    title: "Build Network",
+    text: "Invite others, build your team, and grow your business organically.",
+    icon: "👥",
   },
   {
-    name: "Alice Johnson",
-    feedback:
-      "I love the clear incentives and support. It helped me grow my network quickly.",
-    avatar: "https://randomuser.me/api/portraits/women/22.jpg",
-    position: "Affiliate",
+    title: "Earn Commissions",
+    text: "Easily track your earnings and rewards through our secure dashboard.",
+    icon: "💰",
   },
-]
+];
 
-export default function TestimonialsSection() {
-  const [selectedItem, setSelectedItem] = useState(0)
-  const [direction, setDirection] = useState(1) // 1 = next, -1 = prev
+export default function HowItWorks() {
+  const directions = ["left", "top", "right"];
 
-  const setSlide = (newDirection) => {
-    const nextItem = wrap(0, testimonials.length, selectedItem + newDirection)
-    setSelectedItem(nextItem)
-    setDirection(newDirection)
-  }
+  const cardVariants = {
+    hidden: (direction) => {
+      switch (direction) {
+        case "left":
+          return { opacity: 0, x: -80, y: 0 };
+        case "right":
+          return { opacity: 0, x: 80, y: 0 };
+        case "top":
+          return { opacity: 0, y: -80, x: 0 };
+        default:
+          return { opacity: 0, y: 80, x: 0 };
+      }
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      transition: { duration: 0.9, ease: "easeOut" },
+    },
+  };
 
   return (
-    <section className="max-w-5xl mx-auto px-6 py-16 relative z-10">
-      <h2 className="text-2xl sm:text-3xl font-extrabold text-green-900 mb-12 text-center">
-        What Our Members Say
+    <section className="max-w-7xl mx-auto px-6 py-14 relative z-10">
+      <h2
+        className="text-3xl sm:text-4xl font-extrabold mb-12 text-center"
+        // Deep Blue Primary Color
+        style={{ color: "#004aad" }}
+      >
+        How It Works
       </h2>
 
-      <div className="flex items-center justify-center gap-6">
-        <motion.button
-          onClick={() => setSlide(-1)}
-          className="p-3 rounded-full bg-green-200 hover:bg-green-300"
-        >
-          ◀
-        </motion.button>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {steps.map((step, idx) => {
+          const controls = useAnimation();
+          const [ref, inView] = useInView({ threshold: 0.3, triggerOnce: true });
 
-        <div className="w-full max-w-xl relative">
-          <AnimatePresence custom={direction} initial={false} mode="popLayout">
-            <Slide
-              key={selectedItem}
-              direction={direction}
-              testimonial={testimonials[selectedItem]}
-            />
-          </AnimatePresence>
-        </div>
+          useEffect(() => {
+            if (inView) controls.start("visible");
+          }, [inView, controls]);
 
-        <motion.button
-          onClick={() => setSlide(1)}
-          className="p-3 rounded-full bg-green-200 hover:bg-green-300"
-        >
-          ▶
-        </motion.button>
+          // Determine the color for the number circle based on index
+          let circleGradient;
+          if (idx === 0) {
+            // Step 1: Soft Teal Accent Color
+            circleGradient = "from-[#00bfa6] via-[#00e3cd] to-[#00bfa6]";
+          } else if (idx === 1) {
+            // Step 2: Yellow Secondary Color
+            circleGradient = "from-[#fdbb2d] via-[#fceb86] to-[#fdbb2d]";
+          } else {
+            // Step 3: Deep Blue Primary Color
+            circleGradient = "from-[#004aad] via-[#0069e2] to-[#004aad]";
+          }
+
+          return (
+            <motion.div
+              key={idx}
+              ref={ref}
+              className="bg-white rounded-3xl p-8 flex flex-col items-center text-center relative shadow-lg hover:shadow-2xl transition-transform duration-500 hover:scale-105 border border-gray-200"
+              custom={directions[idx % directions.length]}
+              variants={cardVariants}
+              initial="hidden"
+              animate={controls}
+              transition={{
+                type: "spring",
+                stiffness: 60,
+                damping: 15,
+                delay: idx * 0.2,
+              }}
+            >
+              {/* Floating Icon */}
+              <motion.div
+                className="text-5xl mb-4"
+                animate={{ y: [0, -10, 0] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+                {step.icon}
+              </motion.div>
+
+              {/* Animated Number Circle */}
+              <div 
+                className={`mb-4 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r ${circleGradient} text-white font-bold text-xl shadow-lg animate-pulse`}
+              >
+                {idx + 1}
+              </div>
+
+              <h3 
+                className="text-xl font-semibold mb-2"
+                // Deep Blue Primary Color to title
+                style={{ color: "#004aad" }} 
+              >
+                {step.title}
+              </h3>
+              <p className="text-gray-600 text-base">{step.text}</p>
+            </motion.div>
+          );
+        })}
       </div>
     </section>
-  )
+  );
 }
-
-const Slide = forwardRef(function Slide({ testimonial }, ref) {
-  const presenceDirection = usePresenceData()
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, x: presenceDirection * 50 }}
-      animate={{
-        opacity: 1,
-        x: 0,
-        transition: { delay: 0.1, type: "spring", bounce: 0.3 },
-      }}
-      exit={{ opacity: 0, x: presenceDirection * -50 }}
-      className="bg-gradient-to-br from-white to-green-50 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-4 shadow-md"
-    >
-      <div className="relative">
-        <img
-          src={testimonial.avatar}
-          alt={testimonial.name}
-          className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-4 border-white shadow-md"
-        />
-        <span className="absolute inset-0 rounded-full border-2 border-green-600 opacity-60 animate-pulse"></span>
-      </div>
-      <div className="text-center sm:text-left">
-        <p className="text-gray-700 italic mb-2 leading-relaxed">“{testimonial.feedback}”</p>
-        <p className="font-semibold text-green-900">{testimonial.name}</p>
-        <p className="text-green-700 text-sm">{testimonial.position}</p>
-      </div>
-    </motion.div>
-  )
-})

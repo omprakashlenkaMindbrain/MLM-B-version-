@@ -2,9 +2,16 @@ import { ArrowRight, Eye, EyeOff, Lock, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import Logo from "../../assets/bmpl.jpg";
 import { useAuth } from "../../context/AuthContext";
 
 export default function LoginPage() {
+  // --- Color Constants for readability ---
+  const PRIMARY_COLOR = "#004aad"; // Deep Blue
+  const SECONDARY_COLOR = "#fdbb2d"; // Yellow
+  const BG_LIGHT = "#f0f4f8"; // Light background for contrast
+  // ---------------------------
+
   const { login, isLoggedIn, loading, error } = useAuth();
   const navigate = useNavigate();
 
@@ -27,13 +34,12 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 🔸 Validation with SweetAlert2
     if (!formData.mobno || !formData.password) {
       Swal.fire({
         icon: "warning",
         title: "Missing Fields",
         text: "Please fill in both phone number and password.",
-        confirmButtonColor: "#0E562B",
+        confirmButtonColor: PRIMARY_COLOR,
       });
       return;
     }
@@ -43,47 +49,75 @@ export default function LoginPage() {
         icon: "error",
         title: "Invalid Phone Number",
         text: "Please enter a valid 10-digit phone number.",
-        confirmButtonColor: "#d33",
+        confirmButtonColor: PRIMARY_COLOR,
       });
       return;
     }
 
     try {
-      await login(formData); // handled in AuthContext (includes success/error alerts)
+      await login(formData);
     } catch (err) {
       Swal.fire({
         icon: "error",
         title: "Login Failed",
         text: err.message || "Something went wrong. Please try again.",
-        confirmButtonColor: "#d33",
+        confirmButtonColor: PRIMARY_COLOR,
       });
     }
   };
 
-  const inputClass = "w-full px-3 py-2 text-sm outline-none placeholder-gray-400";
+  const inputClass = "w-full px-3 py-2 text-sm outline-none placeholder-gray-400 bg-transparent";
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-gray-50">
+    <div 
+      className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden" 
+      style={{ backgroundColor: BG_LIGHT }}
+    >
+      {/* 🌈 Animated Background */}
       <div className="absolute inset-0 -z-10 animate-gradient-bg"></div>
 
+      {/* 🧭 Login Card */}
       <div className="w-full max-w-md relative z-10">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border border-[#81B633]/20">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-200">
           {/* Header */}
           <div className="mb-6 text-center">
+            {/* --- LOGO IMPLEMENTATION (Now using the image) --- */}
             <Link
               to="/"
-              className="w-14 h-14 mx-auto bg-[#0E562B] text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg"
+              className="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 shadow-md overflow-hidden border-2"
+              style={{ borderColor: PRIMARY_COLOR }} // Deep Blue border accent
             >
-              BM
+              <img
+                src={Logo}
+                alt="BM2 Mall Logo"
+                className="w-full h-full object-cover"
+              />
             </Link>
-            <h1 className="text-3xl font-bold text-[#0E562B] mb-2">Welcome Back</h1>
+            {/* -------------------------------------------------------- */}
+            <h1 className="text-3xl font-bold mb-2" style={{ color: PRIMARY_COLOR }}>
+              Welcome Back
+            </h1>
             <p className="text-gray-600 text-sm">Sign in to continue to BM2 Mall</p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Phone */}
-            <div className="flex items-center gap-2 border-b border-gray-300 focus-within:border-[#81B633] px-3 py-2 rounded-md">
+            <div 
+              className="flex items-center gap-2 border-b border-gray-300 relative"
+              style={{
+                  borderBottomColor: 'rgb(209, 213, 219)',
+                  boxShadow: `0 1px 0 0 transparent`,
+              }}
+              onFocus={(e) => {
+                  e.currentTarget.style.borderBottomColor = PRIMARY_COLOR;
+                  e.currentTarget.style.boxShadow = `0 1px 0 0 ${PRIMARY_COLOR}`;
+              }}
+              onBlur={(e) => {
+                  e.currentTarget.style.borderBottomColor = 'rgb(209, 213, 219)';
+                  e.currentTarget.style.boxShadow = `0 1px 0 0 transparent`;
+              }}
+            >
               <Phone size={18} className="text-gray-400" />
               <input
                 type="tel"
@@ -97,7 +131,21 @@ export default function LoginPage() {
             </div>
 
             {/* Password */}
-            <div className="flex items-center gap-2 border-b border-gray-300 focus-within:border-[#81B633] px-3 py-2 rounded-md relative">
+            <div 
+              className="flex items-center gap-2 border-b border-gray-300 relative"
+              style={{
+                  borderBottomColor: 'rgb(209, 213, 219)',
+                  boxShadow: `0 1px 0 0 transparent`,
+              }}
+              onFocus={(e) => {
+                  e.currentTarget.style.borderBottomColor = PRIMARY_COLOR;
+                  e.currentTarget.style.boxShadow = `0 1px 0 0 ${PRIMARY_COLOR}`;
+              }}
+              onBlur={(e) => {
+                  e.currentTarget.style.borderBottomColor = 'rgb(209, 213, 219)';
+                  e.currentTarget.style.boxShadow = `0 1px 0 0 transparent`;
+              }}
+            >
               <Lock size={18} className="text-gray-400" />
               <input
                 type={showPassword ? "text" : "password"}
@@ -105,12 +153,12 @@ export default function LoginPage() {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-3 py-2 pr-10 text-sm outline-none placeholder-gray-400"
+                className="w-full px-3 py-2 pr-10 text-sm outline-none placeholder-gray-400 bg-transparent"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -123,11 +171,13 @@ export default function LoginPage() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={() => setRememberMe(!rememberMe)}
-                  className="w-4 h-4 rounded border-gray-300 accent-[#81B633]"
+                  // Use Deep Blue for checkbox accent color
+                  className="w-4 h-4 rounded border-gray-300"
+                  style={{ accentColor: PRIMARY_COLOR }}
                 />
                 Remember me
               </label>
-              <a href="#" className="hover:underline text-[#0E562B] font-medium">
+              <a href="#" className="hover:underline font-medium" style={{ color: PRIMARY_COLOR }}>
                 Forgot password?
               </a>
             </div>
@@ -139,7 +189,20 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center bg-green-700 hover:bg-[#74a82e] text-white py-2 rounded-md font-medium mt-2 transition-all"
+              className="w-full flex items-center justify-center text-black py-3 rounded-lg font-bold mt-4 transition-all duration-300 hover:text-white hover:shadow-lg"
+              style={{ 
+                backgroundColor: SECONDARY_COLOR, // Initial Yellow
+                boxShadow: `0 4px 6px -1px rgba(0, 74, 173, 0.1), 0 2px 4px -2px rgba(0, 74, 173, 0.06)`,
+                cursor:"pointer"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = PRIMARY_COLOR; // Hover Deep Blue
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = SECONDARY_COLOR; // Reset Yellow
+                e.currentTarget.style.color = 'black';
+              }}
             >
               {loading ? "Signing in..." : "Sign in"}
               <ArrowRight size={18} className="ml-2" />
@@ -151,7 +214,8 @@ export default function LoginPage() {
             Don’t have an account?{" "}
             <Link
               to="/register"
-              className="text-[#0E562B] hover:underline font-medium"
+              className="hover:underline font-medium"
+              style={{ color: PRIMARY_COLOR }}
             >
               Sign up
             </Link>
@@ -159,7 +223,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Gradient Animation */}
+      {/* 🎨 Gradient Animation */}
       <style>{`
         @keyframes gradientBG {
           0% {background-position: 0% 50%;}
@@ -167,9 +231,9 @@ export default function LoginPage() {
           100% {background-position: 0% 50%;}
         }
         .animate-gradient-bg {
-          background: linear-gradient(270deg, #e6f3e4, #f2f7f1, #d4e8d0);
+          background: linear-gradient(270deg, ${BG_LIGHT}, #dce6fb, ${BG_LIGHT});
           background-size: 600% 600%;
-          animation: gradientBG 20s ease infinite;
+          animation: gradientBG 15s ease infinite;
           position: absolute;
           inset: 0;
           z-index: -1;

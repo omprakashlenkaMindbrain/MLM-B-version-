@@ -2,8 +2,9 @@ import { useRef, useState } from "react";
 import Swal from "sweetalert2";
 import { useKycUpload } from "../../hooks/kyc/useKyc";
 
-const PRIMARY = "#16a34a";
-const BG_LIGHT = "#f4f8f6";
+const PRIMARY_COLOR = "var(--primary-color, #004aad)";
+const BG_LIGHT = "var(--bg-light, #f8fafc)";
+const ERROR_COLOR = "#d33";
 
 export default function KYCPage() {
   const [aadhaar, setAadhaar] = useState(null);
@@ -22,13 +23,12 @@ export default function KYCPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 🧾 Validation with SweetAlert2
     if (!aadhaar || !pan) {
       Swal.fire({
         icon: "warning",
         title: "Missing Documents",
         text: "Please upload both Aadhaar and PAN card before submitting.",
-        confirmButtonColor: PRIMARY,
+        confirmButtonColor: PRIMARY_COLOR, 
       });
       return;
     }
@@ -46,23 +46,23 @@ export default function KYCPage() {
     try {
       await uploadKyc({ adharFile: aadhaar, panFile: pan });
 
-      // ✅ Success Alert
+      //Success Alert
       Swal.fire({
         icon: "success",
         title: "KYC Submitted Successfully!",
         text: "Your documents have been uploaded and are under verification.",
-        confirmButtonColor: PRIMARY,
+        confirmButtonColor: PRIMARY_COLOR, 
       });
 
       setAadhaar(null);
       setPan(null);
     } catch (err) {
-      // ❌ Error Alert
+      //Error Alert
       Swal.fire({
         icon: "error",
-        title: "Upload Failed",
+        title: "You have alredy uploded your file",
         text: err?.message || "Something went wrong. Please try again.",
-        confirmButtonColor: "#d33",
+        confirmButtonColor: ERROR_COLOR, 
       });
     } finally {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -76,7 +76,6 @@ export default function KYCPage() {
       className="relative min-h-screen flex items-center justify-center px-4 py-10 sm:px-6 overflow-hidden"
       style={{ backgroundColor: BG_LIGHT }}
     >
-      {/* Animated Blobs */}
       <div className="absolute z-0 top-[-150px] left-[-100px] w-[500px] h-[500px] bg-gradient-to-tr from-green-200 to-green-400 opacity-25 rounded-full filter blur-3xl animate-pulse" />
       <div className="absolute z-0 bottom-[-180px] right-[-120px] w-[550px] h-[550px] bg-gradient-to-tr from-blue-200 to-blue-400 opacity-20 rounded-full filter blur-3xl animate-pulse" />
 
@@ -87,7 +86,7 @@ export default function KYCPage() {
         {/* Header */}
         <div className="flex flex-col items-center mb-8 w-full">
           <div
-            style={{ backgroundColor: PRIMARY }}
+            style={{ backgroundColor: PRIMARY_COLOR }} 
             className="w-14 h-14 rounded-full flex items-center justify-center text-white font-extrabold text-xl mb-2 shadow-lg"
           >
             BM2
@@ -122,7 +121,9 @@ export default function KYCPage() {
               ✕ Remove
             </button>
           ) : (
-            <label className="cursor-pointer text-xs font-bold text-green-700 hover:text-green-900 transition-all hover:underline">
+            <label 
+              className="cursor-pointer text-xs font-bold text-green-700 hover:text-green-900 transition-all hover:underline"
+            >
               <input
                 type="file"
                 accept=".png,.jpg,.jpeg,.pdf"
@@ -156,7 +157,10 @@ export default function KYCPage() {
               ✕ Remove
             </button>
           ) : (
-            <label className="cursor-pointer text-xs font-bold text-green-700 hover:text-green-900 transition-all hover:underline">
+            <label 
+              // 🚨 Keeping the existing Tailwind green classes here.
+              className="cursor-pointer text-xs font-bold text-green-700 hover:text-green-900 transition-all hover:underline"
+            >
               <input
                 type="file"
                 accept=".png,.jpg,.jpeg,.pdf"
@@ -173,7 +177,7 @@ export default function KYCPage() {
           type="submit"
           disabled={!aadhaar || !pan || loading}
           className="w-full py-3 rounded-xl font-bold text-white text-lg transition-all duration-300 shadow-md hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-          style={{ backgroundColor: PRIMARY, cursor: "pointer" }}
+          style={{ backgroundColor: "#fdbb2d", cursor: "pointer" }} 
         >
           {loading ? (
             <span className="flex items-center gap-2">

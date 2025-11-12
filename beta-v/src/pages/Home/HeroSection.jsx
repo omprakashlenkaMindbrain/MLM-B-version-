@@ -2,6 +2,10 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 export default function HeroSection() {
+
+  const PRIMARY_NAVY="#1B436D"
+  const BUTTON="#fdbb2d"
+
   const navigate = useNavigate();
   const navigateToJoin = () => navigate("/kyc");
 
@@ -20,19 +24,30 @@ export default function HeroSection() {
         />
       </motion.div>
       <div className="flex-1 text-center lg:text-left">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-green-900 mb-4 leading-snug drop-shadow-md">
+        <h1 
+          className="text-3xl sm:text-4xl font-extrabold mb-4 leading-snug drop-shadow-md"
+          style={{ color: PRIMARY_NAVY }} 
+        >
           Grow Your Income with BM2 Mall's MLM Platform
         </h1>
         <p className="text-gray-700 mb-6 text-base sm:text-lg max-w-lg mx-auto lg:mx-0">
           Join our thriving network and start earning instantly. Build your team,
           unlock bonuses, and watch your business grow.
         </p>
-        <button
-          className="px-6 py-3 rounded-lg bg-green-700 hover:bg-green-800 text-white font-bold text-base sm:text-lg transition shadow-md"
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="px-8 py-3 rounded-xl font-bold text-lg transition shadow-xl"
           onClick={navigateToJoin}
+          style={{
+            backgroundColor: BUTTON,
+            color: PRIMARY_NAVY, 
+            boxShadow: "0 4px 6px rgba(0, 74, 173, 0.2)",
+            cursor:"pointer"
+          }}
         >
           Join Now
-        </button>
+        </motion.button>
       </div>
     </section>
   );

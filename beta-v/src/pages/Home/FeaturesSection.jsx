@@ -5,35 +5,54 @@ const features = [
     title: "Earn with Your Network",
     text: "Build your team and earn generous commissions on every sale.",
     icon: (
-      <div className="w-12 h-12 flex items-center justify-center rounded-full bg-green-500 text-white text-2xl font-bold shadow-lg">
+      // Icon 1: Soft Teal Background
+      <div 
+        className="w-12 h-12 flex items-center justify-center rounded-full text-white text-2xl font-bold shadow-lg"
+        style={{ backgroundColor: "#00bfa6" }} // Soft Teal Accent Color
+      >
         ✓
       </div>
     ),
-    bg: "from-green-500 to-green-700",
+    // Card Background 1: Soft Teal Gradient
+    bg: "from-[#00bfa6] to-[#008975]", // From Soft Teal to a darker shade
   },
   {
     title: "Flexible Plans & Bonuses",
     text: "Choose the perfect plan for your growth with clear incentives.",
     icon: (
-      <div className="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-400 text-white text-2xl font-bold shadow-lg">
+      // Icon 2: Yellow Background
+      <div 
+        className="w-12 h-12 flex items-center justify-center rounded-full text-white text-2xl font-bold shadow-lg"
+        style={{ backgroundColor: "#fdbb2d" }} // Yellow Secondary Color
+      >
         ★
       </div>
     ),
-    bg: "from-yellow-300 to-yellow-500",
+    // Card Background 2: Yellow Gradient
+    bg: "from-[#fdbb2d] to-[#e6a827]", // From Yellow to a darker shade
   },
   {
     title: "Secure & Transparent",
     text: "Track your sales and earnings with ease and full transparency.",
     icon: (
-      <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-500 text-white text-2xl font-bold shadow-lg">
+      // Icon 3: Deep Blue Background
+      <div 
+        className="w-12 h-12 flex items-center justify-center rounded-full text-white text-2xl font-bold shadow-lg"
+        style={{ backgroundColor: "#004aad" }} // Deep Blue Primary Color
+      >
         ⬈
       </div>
     ),
-    bg: "from-blue-400 to-blue-700",
+    // Card Background 3: Deep Blue Gradient
+    bg: "from-[#004aad] to-[#003982]", // From Deep Blue to a darker shade
   },
 ];
 
 export default function FeaturesSection() {
+
+  const PRIMARY_NAVY="#1B436D"
+
+
   const variants = {
     left: { opacity: 0, x: -100 },
     top: { opacity: 0, y: -100 },
@@ -44,7 +63,11 @@ export default function FeaturesSection() {
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-20 relative z-10">
-      <h2 className="text-3xl sm:text-4xl font-extrabold text-green-900 mb-12 text-center drop-shadow-md">
+      <h2 
+        className="text-3xl sm:text-4xl font-extrabold mb-12 text-center drop-shadow-md"
+        // Apply Deep Blue Primary Color
+        style={{ color: PRIMARY_NAVY }}
+      >
         Platform Features
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
